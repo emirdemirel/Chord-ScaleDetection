@@ -1,0 +1,27 @@
+{
+  "tuning": 440.39,
+  "artist": "Jamey Aebersold",
+  "title": "Major Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//scalesdataset/aebersold-7.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": 173.27,
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                      0.29, 1.12, 2.02, 2.88, 3.7, 4.59, 5.42, 6.32, 7.27, 8.04, 8.87, 9.67, 10.48, 11.26, 12.04, 12.83,
+13.66, 14.43, 15.16, 15.98, 16.75, 17.55, 17.85, 18
+                      ],
+              "chords":[
+                "|Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major N |"
+              ]
+            }
+          ]
+
+}

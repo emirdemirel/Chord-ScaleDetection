@@ -1,0 +1,33 @@
+{
+  "tuning": 440.39,
+  "artist": "Jamey Aebersold",
+  "title": "Phrygian Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//scalesdataset/aebersold-5.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": 173.27,
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                      0.48, 1.43, 2.31, 3.22, 4.15, 5.05, 6.11, 7.11, 8.18, 9.11, 10.06, 11.05, 11.94, 12.93, 13.84, 14.77,
+15.75, 16.72, 17.72, 18.72, 19.73, 20.68, 21.6, 22.56, 23.47, 24.29, 25.18, 26.03, 26.94, 27.81, 28.67, 29.48,
+30.38, 31.2, 32.09, 32.94, 33.83, 34.64, 35.55, 36.31, 37.15, 37.94, 38.75, 39.51, 40.25, 41.0, 41.83, 42.63,
+43.46, 44.24, 45.08, 45.95, 46.87, 47.87, 48.79, 49.73, 50.7, 51.66, 52.59, 53.41, 54.27, 55.26, 56.21, 57.16,
+58.11, 59.07, 60.07, 61.02, 62.0, 62.8, 63.7, 64.51, 65.33, 66.21, 67.03, 67.79, 68.57, 69.26, 69.96, 70.7,
+71.38, 72.09, 72.84
+                      ],
+              "chords":[
+                "|Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |",
+                "|Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |",
+                "|Bb:phrygian |Bb:phrygian |Bb:phrygian |Bb:phrygian |"
+              ]
+            }
+          ]
+
+}

@@ -1,0 +1,31 @@
+{
+  "tuning": 440.39,
+  "artist": "Jamey Aebersold",
+  "title": "Blues Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//scalesdataset/aebersold-3.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": 173.27,
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                       1.08, 1.85, 2.58, 3.27, 4.01, 4.77, 5.47, 6.24, 6.96, 7.7, 8.51, 9.3, 10.1, 10.85, 11.65, 12.33,
+13.07, 13.8, 14.53, 15.27, 16.08, 16.83, 17.59, 18.37, 19.2, 19.99, 20.75, 21.54, 22.34, 23.08, 23.85, 24.66,
+25.4, 26.18, 26.95, 27.68, 28.47, 29.19, 29.98, 30.75, 31.46, 32.22, 32.98, 33.77, 34.49, 35.28, 36.05, 36.86,
+37.62, 38.35, 39.1, 39.87, 40.56, 41.32, 42.0, 42.65, 43.35, 44.02, 44.77, 45.5, 46.29, 47.02, 47.75, 48.51,
+49.21, 49.97
+                      ],
+              "chords":[
+                "|Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |N Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |",
+                "|Bb:dorian |N Bb:dorian |Bb:dorian |Bb:dorian N |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |"
+              ]
+            }
+          ]
+
+}
