@@ -1,0 +1,86 @@
+{
+  "tuning": 440.39,
+  "artist": "Jody Fisher",
+  "title": "Track_39",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/39 - Jody Fisher - Track 39.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["C"]
+  },
+  "duration": 173.27,
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                         6.29, 6.9, 7.51, 8.15, 8.77, 9.38, 10.02, 10.65
+                      ],
+              "chords":[
+                "|C:mixolydian |C:mixolydian |"
+              ]
+            },
+            {
+              "name":"NaN",
+              "beats":
+                      [
+                         11.31, 11.94, 12.59, 20.19
+                      ],
+              "chords":[
+                "|N |"
+              ]
+            },
+            {
+              "name":"Part2",
+              "beats":
+                      [
+                     20.83, 21.46, 22.09, 22.72, 23.35, 23.98, 24.62, 25.23
+                      ],
+              "chords":[
+                "|C:mixolydian |C:mixolydian |"
+              ]
+            },
+            {
+              "name":"NaN",
+              "beats":
+                      [
+                         25.87, 26.49, 27.12, 34.64
+                      ],
+              "chords":[
+                "|N |"
+              ]
+            },
+            {
+              "name":"Part3",
+              "beats":
+                      [
+                     35.27, 35.9, 36.53, 37.17
+                      ],
+              "chords":[
+                "|C:mixolydian |"
+              ]
+            },
+            {
+              "name":"NaN",
+              "beats":
+                      [
+                         37.79, 39.09, 39.77, 46.74
+                      ],
+              "chords":[
+                "|N |"
+              ]
+            },
+            {
+              "name":"Part4",
+              "beats":
+                      [
+                         47.45, 48.15, 48.84, 49.54, 50.24, 50.95, 51.66, 52.36, 53.05, 53.74, 54.44, 55
+                      ],
+              "chords":[
+                "|C:mixolydian |C:mixolydian |N |"
+              ]
+            }
+          ]
+
+}
