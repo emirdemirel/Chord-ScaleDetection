@@ -1,0 +1,30 @@
+{
+  "tuning": 440.39,
+  "artist": "Hikmet Altunbaslier",
+  "title": "Lydian_b7 Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_lydianb7.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": 173.27,
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                          1.86, 2.94, 3.92, 4.99, 6.06, 7.09, 8.05, 9.07, 10.06, 11.04, 12.01, 12.94, 13.96, 14.9, 15.98, 17.03,
+18.08, 19.14, 20.15, 21.25, 22.26, 23.32, 24.36, 25.43, 26.43, 27.41, 28.49, 29.49, 30.49, 31.54, 32.51, 33.48,
+34.46, 35.42, 36.46, 37.45, 38.42, 39.4, 40.42, 41.39, 42.32, 43.28, 44.25, 45.26, 46.23, 47.18, 48.17, 49.19,
+50.18, 51.18, 52.14, 53.13, 54.17
+                      ],
+              "chords":[
+                "|Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 N |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |N Bb:lydianb7 |",
+                "|Bb:lydianb7 |Bb:lydianb7 N Bb:lydianb7 Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |"
+              ]
+            }
+          ]
+
+}

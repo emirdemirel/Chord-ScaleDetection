@@ -1,0 +1,35 @@
+{
+  "tuning": 440.39,
+  "artist": "Toprak Barut",
+  "title": "Lydian_b7 Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_lydianb71.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": 173.27,
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                          1.8, 2.78, 3.73, 4.67, 5.64, 6.54, 7.52, 8.49, 9.4, 10.35, 11.19, 12.04, 12.91, 13.83, 14.72, 15.67,
+16.57, 17.5, 18.45, 19.35, 20.3, 21.2, 22.15, 23.07, 24.01, 24.95, 25.81, 26.75, 27.64, 28.54, 29.46, 30.32,
+31.24, 32.1, 33.0, 33.88, 34.76, 35.7, 36.56, 37.49, 38.4, 39.27, 40.22, 41.09, 42.0, 42.9, 43.87, 44.76,
+45.72, 46.67, 47.57, 48.5, 49.45, 50.34, 51.32, 52.24, 53.15, 54.03, 55.0, 55.9, 56.83, 57.71, 58.62, 59.54,
+60.43, 61.35, 62.24, 63.16, 64.13, 65.04, 65.93, 66.88, 67.79, 68.66, 69.58, 70.52, 71.44, 72.3, 73.19, 74.1,
+75.04, 75.93, 76.8, 77.72, 78.6, 79.45, 80.29, 81.18, 82.07, 82.9, 83.84, 84.82, 85.74, 86.69, 87.65, 88.54,
+89.52, 90.44, 91.41, 92.27, 93.23, 94.14, 95.03
+                      ],
+              "chords":[
+                "|Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |",
+                "|Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |",
+                "|Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |Bb:lydianb7 |",
+                "|Bb:lydianb7 Bb:lydianb7 Bb:lydianb7 N |"
+              ]
+            }
+          ]
+
+}

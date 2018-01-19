@@ -1,0 +1,32 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "Locrian_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_locrian.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                         13.31, 14.29, 15.22, 16.1, 17.08, 18.01, 18.94, 19.82, 20.75, 21.68, 22.64, 23.55, 24.47, 25.44, 26.38, 27.25,
+28.22, 29.09, 30.06, 30.98, 31.88, 32.79, 33.69, 34.63, 35.59, 36.59, 37.51, 38.51, 39.51, 40.46, 41.41, 42.4,
+43.38, 44.3, 45.31, 46.25, 47.18, 48.17, 49.15, 50.06, 51.05, 52.03, 52.94, 53.91, 54.91, 55.9, 56.93, 57.84,
+58.85, 59.79, 60.77, 61.69, 62.69, 63.6, 64.61, 65.52, 66.52, 67.46, 68.42, 69.36, 70.37, 71.33, 72.23, 73.23,
+74.13, 75.09, 76.08, 77.04
+                      ],
+              "chords":
+              [
+                "|Bb:locrian |Bb:locrian |Bb:locrian Bb:locrian Bb:locrian N |N Bb:locrian Bb:locrian Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian N N Bb:locrian |Bb:locrian |",
+                "|Bb:locrian |Bb:locrian |Bb:locrian N N Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |N Bb:locrian |Bb:locrian Bb:locrian Bb:locrian N |"
+              ]
+            }
+          ]
+
+}
