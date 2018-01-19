@@ -2,10 +2,10 @@
 Scale Annotations for "Automatic Scale Detection for Monophonic Jazz Solos" task.
 
 Artists - instrument :
-Jamey Aebersold - tenor saxophone
-Jody Fisher - electric guitar
-Hikmet Altunbaslier - trumpet
-Toprak Barut - tenor saxophone
+Jamey Aebersold - tenor saxophone /n
+Jody Fisher - electric guitar /n
+Hikmet Altunbaslier - trumpet /n
+Toprak Barut - tenor saxophone /n
 
 List of scales annotated & taxonomy :
 
