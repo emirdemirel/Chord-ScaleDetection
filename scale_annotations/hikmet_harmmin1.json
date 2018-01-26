@@ -1,0 +1,32 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "HarmonicMinor_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_harmmin1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                       3.28, 4.12, 4.96, 5.8, 6.61, 7.36, 8.14, 8.96, 9.74, 10.48, 11.27, 12.04, 12.85, 13.6, 14.38, 15.17,
+15.98, 16.74, 17.5, 18.34, 19.1, 19.9, 20.72, 21.54, 22.34, 23.1, 23.9, 24.74, 25.5, 26.28, 27.11, 27.89,
+28.65, 29.47, 30.25, 31.02, 31.85, 32.6, 33.43, 34.18, 34.97, 35.77, 36.58, 37.38
+                      ],
+              "chords":
+              [
+                "|Bb:hminor |Bb:hminor |N |Bb:hminor |Bb:hminor Bb:hminor Bb:hminor N |N Bb:hminor Bb:hminor Bb:hminor |Bb:hminor |Bb:hminor |",
+                "|Bb:hminor |Bb:hminor |Bb:hminor |"
+
+
+              ]
+            }
+          ]
+
+}

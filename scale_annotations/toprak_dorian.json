@@ -1,0 +1,31 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Dorian_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_dorian.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                         0.89, 1.84, 2.79, 3.79, 4.81, 5.79, 6.73, 7.69, 8.7, 9.77, 10.76, 11.69, 12.62, 13.57, 14.48, 15.42,
+16.36, 17.33, 18.32, 19.24, 20.21, 21.21, 22.1, 22.96, 23.86, 24.79, 25.76, 26.66, 27.63, 28.56, 29.48, 30.37,
+31.3, 32.23, 33.2, 34.14, 35.05, 35.92, 36.82, 37.78, 38.67, 39.59, 40.5, 41.37, 42.34, 43.28, 44.19, 45.14,
+46.04, 46.95, 47.89, 48.86, 49.79, 50.67
+                      ],
+              "chords":
+              [
+                "|Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |",
+                "|Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |N |"
+              ]
+            }
+          ]
+
+}

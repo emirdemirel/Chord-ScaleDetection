@@ -1,0 +1,40 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Phyrgian_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_phyrgian.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                         1.68, 2.1, 2.54, 2.95, 3.38, 3.81, 4.25, 4.71, 5.13, 5.59, 6.01, 6.45, 6.89, 7.36, 7.81, 8.26,
+8.69, 9.15, 9.61, 10.05, 10.5, 10.95, 11.4, 11.86, 12.29, 12.74, 13.19, 13.64, 14.09, 14.54, 15.0, 15.46,
+15.89, 16.34, 16.81, 17.26, 17.69, 18.14, 18.59, 19.04, 19.49, 19.94, 20.39, 20.84, 21.3, 21.76, 22.21, 22.66,
+23.09, 23.54, 24.0, 24.46, 24.92, 25.4, 25.84, 26.32, 26.76, 27.24, 27.69, 28.14, 28.59, 29.02, 29.48, 29.94,
+30.4, 30.86, 31.32, 31.8, 32.26, 32.72, 33.18, 33.63, 34.08, 34.56, 35.0, 35.47, 35.93, 36.4, 36.85, 37.31,
+37.77, 38.24, 38.72, 39.19, 39.66, 40.12, 40.58, 41.02, 41.48, 41.94, 42.42, 42.87, 43.32, 43.79, 44.26, 44.72,
+45.17, 45.63, 46.1, 46.54, 47.0, 47.48, 47.95, 48.43, 48.88, 49.34, 49.81, 50.27, 50.72, 51.16, 51.61, 52.08,
+52.51, 52.98, 53.41, 53.88, 54.35, 54.82, 55.29, 55.78, 56.25, 56.72, 57.19, 57.66, 58.13, 58.58, 59.04, 59.49,
+59.92, 60.37, 60.82, 61.3, 61.77, 62.23, 62.71, 63.18, 63.66, 64.15, 64.62, 65.1, 65.59, 66.06, 66.54, 67.04,
+67.52, 68.0, 68.46, 68.94, 69.43, 69.92, 70.38, 70.88, 71.36
+                      ],
+              "chords":
+              [
+                "|Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |",
+                "|Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |",
+                "|Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |",
+                "|Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |",
+                "|Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |Bb:phyrgian |"
+              ]
+            }
+          ]
+
+}

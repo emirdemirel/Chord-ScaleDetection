@@ -1,0 +1,28 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Major_Scale(2)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_major2.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+
+                      ],
+              "chords":
+              [
+                "|Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |",
+                "|Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |N |Bb:major |Bb:major |"
+              ]
+            }
+          ]
+
+}

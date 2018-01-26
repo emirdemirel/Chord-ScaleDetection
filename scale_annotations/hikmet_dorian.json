@@ -1,0 +1,32 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "Dorian_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_dorian.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                         1.77, 2.68, 3.56, 4.53, 5.4, 6.33, 7.27, 8.24, 9.15, 10.03, 10.99, 11.87, 12.85, 13.78, 14.67, 15.6,
+16.59, 17.53, 18.44, 19.41, 20.33, 21.24, 22.23, 23.12, 24.08, 25.06, 25.99, 26.93, 27.92, 28.93, 29.89, 30.94,
+31.91, 32.84, 33.81, 34.82, 35.77, 36.77, 37.65, 38.63, 39.53, 40.46, 41.32, 42.22, 43.15, 44.07, 44.95, 45.8,
+46.66, 47.56, 48.45, 49.3, 50.2, 51.09, 51.99, 52.82, 53.73, 54.68, 55.54, 56.45, 57.39, 58.31, 59.16, 60.07,
+60.96, 61.9
+                      ],
+              "chords":
+              [
+                "|Bb:dorian |Bb:dorian |Bb:dorian |N Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |",
+                "|Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |Bb:dorian |"
+              ]
+            }
+          ]
+
+}
