@@ -1,0 +1,34 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "NaturalMinor_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_natmin1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                        2.86, 3.83, 4.74, 5.69, 6.57, 7.51, 8.41, 9.25, 10.18, 11.03, 11.92, 12.83, 13.8, 14.69, 15.64,
+16.53, 17.48, 18.35, 19.28, 20.27, 21.29, 22.29, 23.31, 24.31, 25.25, 26.26, 27.18, 28.09, 29.06, 29.99, 30.96,
+31.9, 32.78, 33.66, 34.6, 35.48, 36.35, 37.29, 38.29, 39.24, 40.16, 41.09, 42.08, 43.01, 43.98, 44.89, 45.84,
+46.85, 47.76, 48.77, 49.68, 50.69, 51.6, 52.58, 53.57, 54.5, 55.4, 56.34, 57.3, 58.21, 59.09, 59.98, 60.91,
+61.84, 62.68, 63.49, 64.31, 65.15, 65.99, 66.87, 67.71, 68.51, 69.33, 70.2, 71.03, 71.85, 72.67, 73.44, 74.27
+                      ],
+              "chords":
+              [
+                "|Bb:minor |Bb:minor |Bb:minor N |Bb:minor |Bb:minor Bb:minor N Bb:minor |Bb:minor |N Bb:minor Bb:minor Bb:minor |Bb:minor |",
+                "|Bb:minor Bb:minor N Bb:minor |Bb:minor |Bb:minor Bb:minor N Bb:minor |N Bb:minor Bb:minor Bb:minor |Bb:minor |N Bb:minor Bb:minor Bb:minor |Bb:minor |N Bb:minor Bb:minor Bb:minor |",
+                "|N Bb:minor Bb:minor Bb:minor |Bb:minor |Bb:minor |"
+
+              ]
+            }
+          ]
+
+}

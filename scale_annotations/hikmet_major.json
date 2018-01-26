@@ -1,0 +1,35 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "Major_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_major.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "beats":
+                      [
+                       1.55, 2.37, 3.18, 3.95, 4.76, 5.63, 6.53, 7.38, 8.26, 9.12, 10.01, 10.9, 11.75, 12.62, 13.46, 14.38, 15.26,
+16.16, 17.03, 17.91, 18.85, 19.79, 20.75, 21.69, 22.6, 23.55, 24.48, 25.44, 26.36, 27.33, 28.29, 29.23, 30.13,
+31.12, 32.06, 33.02, 34.0, 35.03, 36.01, 36.94, 37.98, 38.96, 39.93, 40.85, 41.82, 42.84, 43.81, 44.73, 45.73,
+46.78, 47.8, 48.76, 49.76, 50.7, 51.68, 52.58, 53.5, 54.43, 55.3, 56.24, 57.09, 58.01, 58.89, 59.72, 60.62,
+61.52, 62.44, 63.4, 64.32, 65.23, 66.21, 67.13, 68.02, 69.01, 69.95, 70.86, 71.81, 72.74, 73.71, 74.65, 75.54,
+76.48, 77.48, 78.43, 79.35, 80.28, 81.24, 82.23, 83.13, 84.02, 84.99, 85.86, 86.79, 87.77, 88.68, 89.69, 90.61,
+91.61, 92.58, 93.58, 94.6
+                      ],
+              "chords":
+              [
+                "|Bb:major |N Bb:major Bb:major N |Bb:major |Bb:major N |Bb:major |Bb:major |N Bb:major Bb:major Bb:major |Bb:major |",
+                "|Bb:major |Bb:major |Bb:major |Bb:major |Bb:major Bb:major Bb:major N |Bb:major |Bb:major Bb:major N Bb:major |Bb:major |",
+                "|N Bb:major Bb:major Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major Bb:major Bb:major N |Bb:major Bb:major Bb:major N |Bb:major |"
+              ]
+            }
+          ]
+
+}
