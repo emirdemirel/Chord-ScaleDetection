@@ -11,7 +11,7 @@ Toprak Barut - tenor saxophone
 
 List of scales annotated & taxonomy :
 
-major (major)
+major (major) \n
 dorian (dorian)
 phyrgian (phyrgian)
 lydian (lydian)
