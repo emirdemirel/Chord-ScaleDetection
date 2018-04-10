@@ -18,10 +18,10 @@ lydian (lydian)
 mixolydian (mixolydian)
 natural minor (minor)
 locrian (locrian)
-harmonic minor (hminor)
 lydian b7 (lydianb7)
-super locrian / locrian #2 / altered scale (locrian#2)
+super locrian /  altered scale (slocrian)
 half-whole step symmetrical diminished (hwdiminished)
-
+melodic minor (mminor)
+harmonic minor (hminor)
 
 
