@@ -1,27 +1,24 @@
-# scales_dataset
-Scale Annotations for "Automatic Scale Detection for Monophonic Jazz Solos" task.
+# Chord-Scales_Dataset
+Annotation files for "Chroma Based Automatic Chord-Scale Detection for Monophonic Jazz Solos" task.
 
 Artists - instrument :
 
-Jamey Aebersold - tenor saxophone 
-Jody Fisher - electric guitar 
-Hikmet Altunbaslier - trumpet 
-Toprak Barut - tenor saxophone 
+Jamey Aebersold - tenor saxophone  
+Toprak Barut - tenor saxophone  
+Hikmet Altunbaslier - trumpet  
 
 
-List of scales annotated & taxonomy :
+List of chord-scales annotated & taxonomy :
 
-major (major)
-dorian (dorian)
-phyrgian (phyrgian)
-lydian (lydian)
-mixolydian (mixolydian)
-natural minor (minor)
-locrian (locrian)
-harmonic minor (hminor)
-lydian b7 (lydianb7)
-super locrian / locrian #2 / altered scale (locrian#2)
-half-whole step symmetrical diminished (hwdiminished)
-
-
-
+Major (major)  
+Dorian (dorian)  
+Phyrgian (phyrgian)  
+Lydian (lydian)  
+Mixolydian (mixolydian)  
+Natural Minor (minor)  
+Locrian (locrian)  
+Lydian b7 (lydianb7)  
+Super Locrian /  Altered (slocrian)  
+Half-whole Step Symmetrical Diminished (hwdiminished)  
+Melodic Minor (mminor)  
+Harmonic Minor (hminor)  
