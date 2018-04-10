@@ -1,0 +1,46 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "Altered_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_altered.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"2.39",
+              "endTime":"13.679",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part2",
+              "startTime":"15.418",
+              "endTime":"26.7",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part3",
+              "startTime":"26.98",
+              "endTime":"38.92",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part4",
+              "startTime":"39.90",
+              "endTime":"55.609",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part5",
+              "startTime":"56.032",
+              "endTime":"77.51",
+              "scaleType": "Bb:altered"
+            }
+          ]
+
+}

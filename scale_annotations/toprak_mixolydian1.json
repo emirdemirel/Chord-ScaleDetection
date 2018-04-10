@@ -1,0 +1,63 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Mixolydian_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_mixolydian1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"6.34",
+              "endTime":"12.61",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part2",
+              "startTime":"13.45",
+              "endTime":"18.92",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part3",
+              "startTime":"19.5",
+              "endTime":"25.468",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part4",
+              "startTime":"25.468",
+              "endTime":"30.963",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part5",
+              "startTime":"31.154",
+              "endTime":"40.252",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part6",
+              "startTime":"40.252",
+              "endTime":"46.56",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part7",
+              "startTime":"46.712",
+              "endTime":"51.108",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part8",
+              "startTime":"51.1085",
+              "endTime":"59.0214",
+              "scaleType": "Bb:mixolydian"
+            }
+          ]
+}

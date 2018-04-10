@@ -1,0 +1,70 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "HarmonicMinor_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_harmmin1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"2.11",
+              "endTime":"10.0549",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part2",
+              "startTime":"10.36",
+              "endTime":"17.24",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part3",
+              "startTime":"17.35",
+              "endTime":"22.95",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part4",
+              "startTime":"23.20",
+              "endTime":"26.88",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part5",
+              "startTime":"27.05",
+              "endTime":"30.959",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part6",
+              "startTime":"31.147",
+              "endTime":"35.328",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part7",
+              "startTime":"35.49",
+              "endTime":"44.609",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part8",
+              "startTime":"44.6098",
+              "endTime":"51.13",
+              "scaleType": "Bb:hminor"
+            },
+            {
+              "name":"Part9",
+              "startTime":"51.299",
+              "endTime":"66.47",
+              "scaleType": "Bb:hminor"
+            }
+          ]
+
+}

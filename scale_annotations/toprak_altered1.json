@@ -1,0 +1,53 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Altered_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_altered1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"2.21",
+              "endTime":"12.30",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part2",
+              "startTime":"12.55",
+              "endTime":"26.368",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part3",
+              "startTime":"26.53",
+              "endTime":"38.42",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part4",
+              "startTime":"38.63",
+              "endTime":"47.92",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part5",
+              "startTime":"48.55",
+              "endTime":"55.498",
+              "scaleType": "Bb:altered"
+            },
+            {
+              "name":"Part6",
+              "startTime":"55.74",
+              "endTime":"69.728",
+              "scaleType": "Bb:altered"
+            }
+
+          ]
+
+}

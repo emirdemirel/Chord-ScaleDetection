@@ -4,7 +4,7 @@
   "title": "HWSymmetricalDiminished_Scale",
   "metre": "4/4",
   "sandbox": {
-   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_hwdim.aiff",
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_hwdiminished.aiff",
    "transcriptions": ["Emir Demirel"],
    "key":["Bb"]
   },
@@ -13,21 +13,45 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-                       0.81, 1.71, 2.53, 3.42, 4.26, 5.1, 5.92, 6.79, 7.62, 8.53, 9.39, 10.25, 11.11, 11.93, 12.83, 13.64,
-14.54, 15.37, 16.22, 17.13, 17.96, 18.81, 19.71, 20.54, 21.42, 22.34, 23.18, 24.11, 24.97, 25.9, 26.77, 27.72,
-28.56, 29.48, 30.39, 31.25, 32.12, 33.01, 33.93, 34.81, 35.69, 36.57, 37.45, 38.32, 39.17, 40.06, 40.97, 41.81,
-42.7, 43.51, 44.37, 45.25, 46.11, 46.97, 47.86, 48.69, 49.58, 50.39, 51.28, 52.13, 53.05, 53.87, 54.74, 55.66,
-56.53, 57.34, 58.2, 59.06, 59.96, 60.82, 61.67, 62.53, 63.41, 64.27
-                      ],
-              "chords":
-              [
-                "|Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |",
-                "|Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |",
-                "|Bb:hwdiminished |Bb:hwdiminished |"
-
-              ]
+              "startTime":"1.33",
+              "endTime":"10.469",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part2",
+              "startTime":"10.98",
+              "endTime":"20.349",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part3",
+              "startTime":"21.018",
+              "endTime":"32.118",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part4",
+              "startTime":"32.70",
+              "endTime":"41.64",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part5",
+              "startTime":"32.708",
+              "endTime":"49.59",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part6",
+              "startTime":"49.83",
+              "endTime":"59.00",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part7",
+              "startTime":"59.59",
+              "endTime":"65.57",
+              "scaleType": "Bb:hwdiminished"
             }
           ]
 
