@@ -13,18 +13,27 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-                         1.71, 2.57, 3.5, 4.4, 5.25, 6.14, 7.03, 7.96, 8.84, 9.68, 10.56, 11.45, 12.32, 13.22, 14.09, 14.97,
-15.94, 16.91, 17.89, 18.86, 19.8, 20.74, 21.7, 22.67, 23.64, 24.62, 25.56, 26.53, 27.44, 28.4, 29.35, 30.34,
-31.3, 32.25, 33.2, 34.12, 35.07, 35.99, 36.97, 37.9, 38.83, 39.74, 40.65, 41.62, 42.54, 43.44, 44.38, 45.34,
-46.3, 47.24, 48.13, 49.1, 50.04, 50.94, 51.83, 52.8
-                      ],
-              "chords":
-              [
-                "|Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |",
-                "|Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |Bb:lydian |N |"
-              ]
+              "startTime":"1.476",
+              "endTime":"15.37",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part2",
+              "startTime":"15.629",
+              "endTime":"23.267",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part3",
+              "startTime":"23.395",
+              "endTime":"38.22",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part4",
+              "startTime":"38.768",
+              "endTime":"50.706",
+              "scaleType": "Bb:lydian"
             }
           ]
 

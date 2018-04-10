@@ -13,22 +13,45 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-                         1.27, 2.23, 3.12, 4.07, 5.0, 6.07, 7.02, 8.11, 9.16, 10.26, 11.34, 12.39, 13.48, 14.42, 15.36, 16.33,
-17.32, 18.3, 19.22, 20.12, 20.97, 21.92, 22.77, 23.68, 24.63, 25.54, 26.43, 27.35, 28.32, 29.2, 30.15, 31.12,
-32.02, 32.98, 33.97, 34.95, 35.9, 36.82, 37.75, 38.68, 39.62, 40.6, 41.52, 42.45, 43.33, 44.26, 45.18, 46.06,
-47.0, 47.89, 48.77, 49.73, 50.63, 51.48, 52.39, 53.34, 54.21, 55.12, 56.06, 56.97, 57.82, 58.77, 59.63, 60.58,
-61.49, 62.39, 63.32, 64.18, 65.09, 66.01, 66.97, 67.86, 68.76, 69.72, 70.67, 71.55, 72.48, 73.44, 74.39, 75.24,
-76.13, 76.99, 77.82, 78.71, 79.61, 80.43, 81.32, 82.17, 83.07, 83.95, 84.82, 85.72, 86.55, 87.43, 88.33, 89.16,
-90.04, 90.91
-                      ],
-              "chords":
-              [
-                "|Bb:mixolydian |Bb:mixolydian |Bb:mixolydian N |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |",
-                "|Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |",
-                "|Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |Bb:mixolydian |"
-              ]
+              "startTime":"10.81",
+              "endTime":"12.33",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part2",
+              "startTime":"24.9",
+              "endTime":"37.11",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part3",
+              "startTime":"37.418",
+              "endTime":"49.68",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part4",
+              "startTime":"49.99",
+              "endTime":"56.4",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part5",
+              "startTime":"56.403",
+              "endTime":"65.74",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part6",
+              "startTime":"66.04",
+              "endTime":"79.354",
+              "scaleType": "Bb:mixolydian"
+            },
+            {
+              "name":"Part7",
+              "startTime":"79.72",
+              "endTime":"102.42",
+              "scaleType": "Bb:mixolydian"
             }
           ]
 

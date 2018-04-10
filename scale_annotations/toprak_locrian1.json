@@ -13,18 +13,33 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-                         1.18, 2.11, 3.09, 4.02, 5.04, 6.06, 7.1, 8.13, 9.09, 10.09, 11.05, 11.94, 12.89, 13.84, 14.76, 15.75,
-16.65, 17.63, 18.52, 19.46, 20.43, 21.41, 22.4, 23.36, 24.4, 25.34, 26.35, 27.3, 28.23, 29.17, 30.12, 31.1,
-32.07, 32.98, 33.97, 34.92, 35.86, 36.8, 37.69, 38.67, 39.62, 40.55, 41.51, 42.49, 43.45, 44.42, 45.34, 46.3,
-47.26, 48.24, 49.27, 50.3, 51.31
-                      ],
-              "chords":
-              [
-                "|Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |",
-                "|Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |Bb:locrian |"
-              ]
+              "startTime":"0.89",
+              "endTime":"11.74",
+              "scaleType": "Bb:locrian"
+            },
+            {
+              "name":"Part2",
+              "startTime":"12.02",
+              "endTime":"21.62",
+              "scaleType": "Bb:locrian"
+            },
+            {
+              "name":"Part3",
+              "startTime":"21.89",
+              "endTime":"30.50",
+              "scaleType": "Bb:locrian"
+            },
+            {
+              "name":"Part4",
+              "startTime":"30.69",
+              "endTime":"36.84",
+              "scaleType": "Bb:locrian"
+            },
+            {
+              "name":"Part5",
+              "startTime":"37.36",
+              "endTime":"50.16",
+              "scaleType": "Bb:locrian"
             }
           ]
 

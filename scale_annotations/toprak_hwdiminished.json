@@ -13,20 +13,39 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-                       1.26, 2.31, 3.33, 4.42, 5.5, 6.63, 7.68, 8.67, 9.73, 10.79, 11.89, 12.91, 14.02, 15.03, 16.08,
-17.18, 18.19, 19.23, 20.23, 21.22, 22.21, 23.27, 24.32, 25.34, 26.33, 27.41, 28.41, 29.41, 30.38, 31.38, 32.39,
-33.46, 34.42, 35.47, 36.48, 37.59, 38.66, 39.67, 40.8, 41.83, 42.88, 43.95, 45.05, 46.11, 47.18, 48.29, 49.31,
-50.27, 51.29, 52.32, 53.35, 54.39, 55.42, 56.37, 57.42, 58.4, 59.42, 60.44, 61.48, 62.47
-                      ],
-              "chords":
-              [
-                "|Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |",
-                "|Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |Bb:hwdiminished |"
-
-
-              ]
+              "startTime":"1.11",
+              "endTime":"12.70",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part2",
+              "startTime":"12.70",
+              "endTime":"25.589",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part3",
+              "startTime":"25.73",
+              "endTime":"33.31",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part4",
+              "startTime":"33.315",
+              "endTime":"42.22",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part5",
+              "startTime":"42.37",
+              "endTime":"49.508",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part6",
+              "startTime":"49.768",
+              "endTime":"60.205",
+              "scaleType": "Bb:hwdiminished"
             }
           ]
 

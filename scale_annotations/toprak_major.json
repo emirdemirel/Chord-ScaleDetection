@@ -13,14 +13,9 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-                        0.6, 1.51, 2.36, 3.25, 4.11, 4.91, 5.79, 6.61, 7.4, 8.23, 9.08, 9.93, 10.83
-                      ],
-              "chords":
-              [
-                "|Bb:major |Bb:major |Bb:major |"
-              ]
+              "startTime":"0.486",
+              "endTime":"11.089",
+              "scaleType": "Bb:major"
             }
           ]
 

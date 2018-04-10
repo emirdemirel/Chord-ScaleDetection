@@ -13,15 +13,21 @@
           [
             {
               "name":"Part1",
-              "beats":
-                      [
-
-                      ],
-              "chords":
-              [
-                "|Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |",
-                "|Bb:major |Bb:major |Bb:major |Bb:major |Bb:major |N |Bb:major |Bb:major |"
-              ]
+              "startTime":"0.45",
+              "endTime":"14.20",
+              "scaleType": "Bb:major"
+            },
+            {
+              "name":"Part2",
+              "startTime":"14.203",
+              "endTime":"25.56",
+              "scaleType": "Bb:major"
+            },
+            {
+              "name":"Part3",
+              "startTime":"25.566",
+              "endTime":"45.67",
+              "scaleType": "Bb:major"
             }
           ]
 
