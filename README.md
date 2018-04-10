@@ -1,5 +1,5 @@
-# scales_dataset
-Scale Annotations for "Automatic Scale Detection for Monophonic Jazz Solos" task.
+# Chord-Scales_Dataset
+Annotation files for "Chroma Based Automatic Chord-Scale Detection for Monophonic Jazz Solos" task.
 
 Artists - instrument :
 
