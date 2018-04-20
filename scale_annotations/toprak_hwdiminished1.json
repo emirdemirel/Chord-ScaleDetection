@@ -1,0 +1,76 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "HWSymmetricalDiminished_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_hwdiminished1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"1.818",
+              "endTime":"8.82",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part2",
+              "startTime":"12.00",
+              "endTime":"16.18",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part3",
+              "startTime":"17.279",
+              "endTime":"26.525",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part4",
+              "startTime":"26.738",
+              "endTime":"35.30",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part5",
+              "startTime":"35.71",
+              "endTime":"52.14",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part6",
+              "startTime":"52.96",
+              "endTime":"59.59",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part7",
+              "startTime":"60.02",
+              "endTime":"72.75",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part8",
+              "startTime":"73.090",
+              "endTime":"77.546",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part9",
+              "startTime":"78.00",
+              "endTime":"85.398",
+              "scaleType": "Bb:hwdiminished"
+            },
+            {
+              "name":"Part10",
+              "startTime":"85.792",
+              "endTime":"93.189",
+              "scaleType": "Bb:hwdiminished"
+            }
+          ]
+
+}

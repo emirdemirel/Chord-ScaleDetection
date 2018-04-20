@@ -1,0 +1,58 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Lydian_Scale(2)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_lydian2.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"5.99",
+              "endTime":"13.93",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part2",
+              "startTime":"14.19",
+              "endTime":"27.01",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part3",
+              "startTime":"27.17",
+              "endTime":"33.51",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part4",
+              "startTime":"33.515",
+              "endTime":"42.047",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part5",
+              "startTime":"42.328",
+              "endTime":"46.64",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part6",
+              "startTime":"47.031",
+              "endTime":"56.308",
+              "scaleType": "Bb:lydian"
+            },
+            {
+              "name":"Part7",
+              "startTime":"56.826",
+              "endTime":"72.618",
+              "scaleType": "Bb:lydian"
+            }
+          ]
+
+}

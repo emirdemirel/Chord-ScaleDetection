@@ -1,0 +1,46 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Minor_Scale(1)",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_minor1.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+            {
+              "name":"Part1",
+              "startTime":"0.85",
+              "endTime":"12.41",
+              "scaleType": "Bb:minor"
+            },
+             {
+              "name":"Part2",
+              "startTime":"12.62",
+              "endTime":"26.28",
+              "scaleType": "Bb:minor"
+            },
+             {
+              "name":"Part3",
+              "startTime":"26.28",
+              "endTime":"41.564",
+              "scaleType": "Bb:minor"
+            },
+             {
+              "name":"Part4",
+              "startTime":"41.77",
+              "endTime":"49.31",
+              "scaleType": "Bb:minor"
+            },
+            {
+              "name":"Part5",
+              "startTime":"49.48",
+              "endTime":"68.40",
+              "scaleType": "Bb:minor"
+            }
+          ]
+
+}

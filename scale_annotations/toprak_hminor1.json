@@ -4,7 +4,7 @@
   "title": "HarmonicMinor_Scale(1)",
   "metre": "4/4",
   "sandbox": {
-   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_harmmin1.aiff",
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_hminor1.aiff",
    "transcriptions": ["Emir Demirel"],
    "key":["Bb"]
   },

@@ -4,7 +4,7 @@
   "title": "HarmonicMinor_Scale(2)",
   "metre": "4/4",
   "sandbox": {
-   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_harmmin2.aiff",
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_hminor2.aiff",
    "transcriptions": ["Emir Demirel"],
    "key":["Bb"]
   },
