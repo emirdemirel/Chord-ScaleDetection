@@ -6,7 +6,7 @@ import numpy as np
 import essentia.standard as ess
 import matplotlib.pyplot as plt
 
-%matplotlib inline
+
 import warnings
 warnings.filterwarnings('ignore')
 import IPython.display as ipd
@@ -24,7 +24,7 @@ from scipy.stats import dirichlet
 
 #Container for analysis parameters
 class AnalysisParams:
-    def __init__(self,windowSize,hopSize,windowFunction,fftN,fs):
+    def __init__(self,windowSize,hopSize,windowFunction,fftN,fs,numBins):
         '''
         windowSize: milliseconds,
         hopSize: milliseconds,
@@ -36,6 +36,7 @@ class AnalysisParams:
         self.windowFunction = windowFunction
         self.fftN=fftN
         self.fs=fs
+        self.numBins = numBins
 
 def initiateData4File(file,root):
     '''Forming the data structure for file
@@ -50,7 +51,7 @@ def initiateData4File(file,root):
         Dictionary containing all info and data for the file
     ''' 
     fileData=dict();fileData['name']=file.split('.')[0];fileData['path']=root;
-    fileData['numBin']=[];
+    fileData['numBins']=[];
     fileData['hpcp']=[];
     fileData['mean_hpcp_vector']=[];
     fileData['std_hpcp_vector']=[];
@@ -68,7 +69,33 @@ def sliceAudiotoParts(audio,endTime,startTime,params): #slicing the audio into p
     audio_slice = audio[starttime*fs:endtime*fs]
     return audio_slice
 
-######### FEATURE EXTRACTION
+def createDataStructure(targetDir,numBins):
+    dataDict = dict()
+    
+    for root, dirs, files in os.walk(targetDir):
+        for file in files:
+            if file.endswith('.json'):
+                with open(targetDir+file) as json_file:
+                    annotationData=json.load(json_file)
+                    fileName=file.split('.')[0]
+                    dataParts=annotationData['parts']
+                    for i in range (len(dataParts)):
+                    
+                        fileData=initiateData4File(file,root)            
+                        files4scale=dataDict.get(fileName)
+                        if files4scale==None:
+                            files4scale=[fileData]
+                        else:
+                            files4scale.append(fileData)
+                    
+                        dataDict[fileName]=files4scale
+                        dataDict[fileName][i]['groundtruth']=dataParts[i]
+                        dataDict[fileName][i]['key']=annotationData['sandbox']['key']                        
+                        dataDict[fileName][i]['numBins'] = numBins
+    return dataDict
+                        
+
+######### FEATURE EXTRACTION #################
 
 
 def computeReferenceFrequency(tonic,tuningfreq):    #computation of the reference frequency for HPCP vector from the tonic of the audio segment
@@ -79,10 +106,12 @@ def computeReferenceFrequency(tonic,tuningfreq):    #computation of the referenc
                                                      #divide the results by 2 the get one octave lower pitch as the reference freq
             return ref_freq
         
-def computeHPCP(x,windowSize,hopSize,params,numBins):   
+def computeHPCP(x,windowSize,hopSize,params,fileData):   
     
     #Initializing lists for features
     hpcp=[];
+    numBins = params.numBins
+    
     #Main windowing and feature extraction loop
     for frame in ess.FrameGenerator(x, frameSize=windowSize, hopSize=hopSize, startFromZero=True):
         frame=ess.Windowing(size=windowSize, type=params.windowFunction)(frame)
@@ -110,7 +139,7 @@ def computeHPCPFeatures(fileData,params,numBins):
     '''
     #Reading the wave file
     fs=params.fs
-    x = ess.MonoLoader(filename = os.path.join('../audio/', fileData['name']+'.aiff'), sampleRate = fs)()
+    x = ess.MonoLoader(filename = os.path.join('audio/', fileData['name']+'.mp3'), sampleRate = fs)()
     x = ess.DCRemoval()(x) ##preprocessing / apply DC removal for noisy regions
     x = ess.EqualLoudness()(x)
     #Windowing (first converting from msec to number of samples)
@@ -122,7 +151,7 @@ def computeHPCPFeatures(fileData,params,numBins):
     endTime=fileData['groundtruth']['endTime']
     x_slice = sliceAudiotoParts(x,endTime,startTime,params)
     
-    HPCPs, tuningfreq = computeHPCP(x_slice,windowSize,hopSize,params,numBins)
+    HPCPs, tuningfreq = computeHPCP(x_slice,windowSize,hopSize,params,fileData)
     fileData['hpcp']=np.array(HPCPs);
     fileData['tuning'] = tuningfreq;
     
@@ -140,11 +169,44 @@ def computeGlobHPCP(fileData):
     
     features=list(fileData.keys())
     features.remove('path');features.remove('name')
-    for feature in features:
-        if feature == 'hpcp':
-            for j in range(len(fileData['hpcp'][0])):
-                hpcps = [];
-                for i in range(len(fileData['hpcp'])):
-                    hpcps.append(fileData['hpcp'][i][j])
-                fileData['mean_hpcp_vector'].append(np.mean(hpcps))
-                fileData['std_hpcp_vector'].append(np.std(hpcps))   
+    
+    for j in range(fileData['numBins']):
+        hpcps = [];
+        for i in range(len(fileData['hpcp'])):
+            hpcps.append(fileData['hpcp'][i][j])
+        fileData['mean_hpcp_vector'].append(np.mean(hpcps))
+        fileData['std_hpcp_vector'].append(np.std(hpcps))   
+                
+############ DATA FORMATTING ###################
+
+def generateCSV(filename):
+    
+    with open(filename, 'rb') as f:
+        data = pickle.load(f)
+    numBins = data['toprak_dorian'][0]['numBins']    
+    fieldnames=['name']
+    for i in range(numBins):
+        ind=str(i)
+        fieldnames.append('mean_hpcp'+ind)
+    for i in range(numBins):
+        ind=str(i)
+        fieldnames.append('std_hpcp'+ind)    
+    fieldnames.append('scaleType')
+    dataList=[]
+    dataList.append(fieldnames)
+    for fileName, parts in data.items(): ##navigate in dictionary
+        for part in parts: #search within audio slices
+            tempList=[] #temporary List to put attributes for each audio slice (data-point)
+            dataname = part['name']+'_'+part['groundtruth']['name'] #name of data
+            tempList.append(dataname)
+            for i in range(numBins): #append mean_HPCP vector bins separately            
+                tempList.append(part['mean_hpcp_vector'][i])
+            for i in range(numBins): #append mean_HPCP vector bins separately            
+                tempList.append(part['std_hpcp_vector'][i])    
+            tempList.append(part['groundtruth']['scaleType'].split(':')[1])    #append scales for classification
+            dataList.append(tempList)
+
+    with open('mycsvfile.csv', 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(dataList)    
+        
