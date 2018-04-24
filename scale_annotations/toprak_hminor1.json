@@ -12,12 +12,6 @@
   "parts":
           [
             {
-              "name":"Part1",
-              "startTime":"2.11",
-              "endTime":"10.0549",
-              "scaleType": "Bb:hminor"
-            },
-            {
               "name":"Part2",
               "startTime":"10.36",
               "endTime":"17.24",
