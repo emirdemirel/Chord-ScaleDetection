@@ -1,0 +1,44 @@
+{
+  "title": "ModalExercise - Ionian & Aeolian",
+  "metre": "4/4",
+  "duration": "TODO",
+  "parts": [
+    {
+      "name": "Part1",
+      "startTime": "2.42",
+      "endTime": "12.02",
+      "scaleType": "E:major"
+    },
+    {
+      "name": "Part2",
+      "startTime": "12.02",
+      "endTime": "21.62",
+      "scaleType": "E:minor"
+    },
+    {
+      "name": "Part3",
+      "startTime": "21.62",
+      "endTime": "31.24",
+      "scaleType": "C:major"
+    },
+    {
+      "name": "Part4",
+      "startTime": "31.24",
+      "endTime": "40.82",
+      "scaleType": "C:minor"
+    },
+    {
+      "name": "Part5",
+      "startTime": "40.82",
+      "endTime": "50.41",
+      "scaleType": "Ab:major"
+    },
+    {
+      "name": "Part6",
+      "startTime": "50.41",
+      "endTime": "60.02",
+      "scaleType": "Ab:minor"
+    }
+
+  ]
+}
