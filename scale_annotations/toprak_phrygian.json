@@ -1,0 +1,52 @@
+{
+  "tuning": "TODO",
+  "artist": "Toprak Barut",
+  "title": "Phrygian_Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/toprak_phrygian.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+           {
+              "name":"Part1",
+              "startTime":"1.39",
+              "endTime":"15.09",
+              "scaleType": "Bb:phrygian"
+            },
+             {
+              "name":"Part2",
+              "startTime":"15.26",
+              "endTime":"24.92",
+              "scaleType": "Bb:phrygian"
+            },
+             {
+              "name":"Part3",
+              "startTime":"25.13",
+              "endTime":"35.92",
+              "scaleType": "Bb:phrygian"
+            },
+             {
+              "name":"Part4",
+              "startTime":"36.26",
+              "endTime":"45.66",
+              "scaleType": "Bb:phrygian"
+            },
+            {
+              "name":"Part5",
+              "startTime":"45.87",
+              "endTime":"58.189",
+              "scaleType": "Bb:phrygian"
+            },
+             {
+              "name":"Part6",
+              "startTime":"58.189",
+              "endTime":"68.64",
+              "scaleType": "Bb:hminor"
+            }
+          ]
+
+}

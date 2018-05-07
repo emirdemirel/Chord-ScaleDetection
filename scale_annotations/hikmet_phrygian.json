@@ -1,0 +1,40 @@
+{
+  "tuning": "TODO",
+  "artist": "Hikmet Altunbaslier",
+  "title": "Phrygian Scale",
+  "metre": "4/4",
+  "sandbox": {
+   "path": "$JAZZ_HARMONY_DATA_ROOT//Tracks/scales_dataset/hikmet_phrygian.aiff",
+   "transcriptions": ["Emir Demirel"],
+   "key":["Bb"]
+  },
+  "duration": "TODO",
+  "parts":
+          [
+             {
+              "name":"Part1",
+              "startTime":"9.80",
+              "endTime":"23.24",
+              "scaleType": "Bb:phrygian"
+            },
+            {
+              "name":"Part2",
+              "startTime":"26.41",
+              "endTime":"46.015",
+              "scaleType": "Bb:phrygian"
+            },
+            {
+              "name":"Part3",
+              "startTime":"46.89",
+              "endTime":"62.21",
+              "scaleType": "Bb:phrygian"
+            },
+            {
+              "name":"Part4",
+              "startTime":"62.8",
+              "endTime":"94.9",
+              "scaleType": "Bb:phrygian"
+            }
+          ]
+
+}
