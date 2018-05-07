@@ -32,23 +32,17 @@
             {
               "name":"Part4",
               "startTime":"33.515",
-              "endTime":"42.047",
-              "scaleType": "Bb:lydian"
-            },
-            {
-              "name":"Part5",
-              "startTime":"42.328",
               "endTime":"46.64",
               "scaleType": "Bb:lydian"
             },
             {
-              "name":"Part6",
+              "name":"Part5",
               "startTime":"47.031",
               "endTime":"56.308",
               "scaleType": "Bb:lydian"
             },
             {
-              "name":"Part7",
+              "name":"Part6",
               "startTime":"56.826",
               "endTime":"72.618",
               "scaleType": "Bb:lydian"

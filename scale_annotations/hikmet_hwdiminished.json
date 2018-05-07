@@ -20,35 +20,23 @@
             {
               "name":"Part2",
               "startTime":"10.98",
-              "endTime":"20.349",
-              "scaleType": "Bb:hwdiminished"
-            },
-            {
-              "name":"Part3",
-              "startTime":"21.018",
               "endTime":"32.118",
               "scaleType": "Bb:hwdiminished"
             },
             {
-              "name":"Part4",
+              "name":"Part3",
               "startTime":"32.70",
               "endTime":"41.64",
               "scaleType": "Bb:hwdiminished"
             },
             {
-              "name":"Part5",
+              "name":"Part4",
               "startTime":"32.708",
-              "endTime":"49.59",
-              "scaleType": "Bb:hwdiminished"
-            },
-            {
-              "name":"Part6",
-              "startTime":"49.83",
               "endTime":"59.00",
               "scaleType": "Bb:hwdiminished"
             },
             {
-              "name":"Part7",
+              "name":"Part5",
               "startTime":"59.59",
               "endTime":"65.57",
               "scaleType": "Bb:hwdiminished"

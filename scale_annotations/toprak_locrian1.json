@@ -32,12 +32,6 @@
             {
               "name":"Part4",
               "startTime":"30.69",
-              "endTime":"36.84",
-              "scaleType": "Bb:locrian"
-            },
-            {
-              "name":"Part5",
-              "startTime":"37.36",
               "endTime":"50.16",
               "scaleType": "Bb:locrian"
             }

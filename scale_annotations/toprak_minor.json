@@ -32,6 +32,12 @@
              {
               "name":"Part4",
               "startTime":"34.79",
+              "endTime":"41.77",
+              "scaleType": "Bb:minor"
+            },
+	    {
+              "name":"Part5",
+              "startTime":"41.8",
               "endTime":"49.73",
               "scaleType": "Bb:minor"
             }

@@ -17,39 +17,51 @@
               "endTime":"12.98",
               "scaleType": "Bb:lydianb7"
             },
-            {
+	    {
               "name":"Part2",
-              "startTime":"12.98",
-              "endTime":"25.465",
+              "startTime":"13.3",
+              "endTime":"18.8",
               "scaleType": "Bb:lydianb7"
             },
             {
               "name":"Part3",
+              "startTime":"18.98",
+              "endTime":"25.465",
+              "scaleType": "Bb:lydianb7"
+            },
+            {
+              "name":"Part4",
               "startTime":"25.4658",
               "endTime":"35.29",
               "scaleType": "Bb:lydianb7"
             },
             {
-              "name":"Part4",
+              "name":"Part5",
               "startTime":"35.29",
-              "endTime":"46.019",
+              "endTime":"46.00",
               "scaleType": "Bb:lydianb7"
             },
-            {
-              "name":"Part5",
-              "startTime":"46.0192",
+	    {
+              "name":"Part6",
+              "startTime":"46.41",
               "endTime":"55.3359",
               "scaleType": "Bb:lydianb7"
             },
             {
-              "name":"Part6",
+              "name":"Part7",
               "startTime":"55.56",
               "endTime":"67.53",
               "scaleType": "Bb:lydianb7"
             },
             {
-              "name":"Part7",
+              "name":"Part8",
               "startTime":"67.53",
+              "endTime":"76.47",
+              "scaleType": "Bb:lydianb7"
+            },
+	     {
+              "name":"Part9",
+              "startTime":"76.5",
               "endTime":"92.32",
               "scaleType": "Bb:lydianb7"
             }

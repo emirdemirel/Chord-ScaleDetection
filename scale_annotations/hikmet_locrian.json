@@ -13,24 +13,12 @@
           [
             {
               "name":"Part1",
-              "startTime":"12.64",
-              "endTime":"22.08",
-              "scaleType": "Bb:locrian"
-            },
-            {
-              "name":"Part2",
-              "startTime":"24.52",
-              "endTime":"36.45",
-              "scaleType": "Bb:locrian"
-            },
-            {
-              "name":"Part3",
-              "startTime":"37.84",
+              "startTime":"13.00",             
               "endTime":"52.07",
               "scaleType": "Bb:locrian"
             },
             {
-              "name":"Part4",
+              "name":"Part2",
               "startTime":"54.469",
               "endTime":"72.96",
               "scaleType": "Bb:locrian"

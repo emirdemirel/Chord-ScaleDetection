@@ -11,15 +11,15 @@
   "duration": "TODO",
   "parts":
           [
-            {
+	    {
               "name":"Part1",
-              "startTime":"10.17",
-              "endTime":"17.67",
+              "startTime":"1.00",
+              "endTime":"10.00",
               "scaleType": "Bb:hminor"
             },
             {
               "name":"Part2",
-              "startTime":"17.79",
+              "startTime":"10.17",
               "endTime":"24.34",
               "scaleType": "Bb:hminor"
             },

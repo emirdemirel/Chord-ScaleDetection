@@ -25,13 +25,7 @@
             },
             {
               "name":"Part3",
-              "startTime":"17.87",
-              "endTime":"22.58",
-              "scaleType": "Bb:dorian"
-            },
-            {
-              "name":"Part4",
-              "startTime":"23.567",
+              "startTime":"17.87",              
               "endTime":"31.238465",
               "scaleType": "Bb:dorian"
             }

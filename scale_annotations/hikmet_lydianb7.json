@@ -20,23 +20,17 @@
             {
               "name":"Part2",
               "startTime":"13.687",
-              "endTime":"21.78",
-              "scaleType": "Bb:lydianb7"
-            },
-            {
-              "name":"Part3",
-              "startTime":"22.97",
               "endTime":"31.037",
               "scaleType": "Bb:lydianb7"
             },
             {
-              "name":"Part4",
+              "name":"Part3",
               "startTime":"32.64",
               "endTime":"43.95",
               "scaleType": "Bb:lydianb7"
             },
             {
-              "name":"Part5",
+              "name":"Part4",
               "startTime":"44.82",
               "endTime":"54.65",
               "scaleType": "Bb:lydianb7"

@@ -14,26 +14,20 @@
             {
               "name":"Part1",
               "startTime":"1.32",
-              "endTime":"14.87",
-              "scaleType": "Bb:lydianb7"
+              "endTime":"22.22",
+              "scaleType": "Bb:locrian"
             },
             {
               "name":"Part2",
-              "startTime":"15.09",
-              "endTime":"22.22",
-              "scaleType": "Bb:lydianb7"
+              "startTime":"22.47",
+              "endTime":"31.05",
+              "scaleType": "Bb:locrian"
             },
             {
               "name":"Part3",
-              "startTime":"22.47",
-              "endTime":"31.05",
-              "scaleType": "Bb:lydianb7"
-            },
-            {
-              "name":"Part4",
               "startTime":"31.20",
               "endTime":"48.89",
-              "scaleType": "Bb:lydianb7"
+              "scaleType": "Bb:locrian"
             }
           ]
 
