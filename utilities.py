@@ -327,6 +327,7 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     ax2.set_xlabel('Frame #')
     ax2.set_ylabel('Pitch-Classes')
     tick_marks1 = np.arange(len(pitch_classes))
+    ax2.set_yticks(tick_marks1)
     
     plt.show()
         
@@ -598,6 +599,11 @@ def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
     '''
     
 ####### CASE STUDY : CHORD-SCALE EXERCISE ###############
+
+######## PERFORMANCE ASSESSMENT & GRADING ##############
+
+def PerformanceAssessment(FeatureData, ScaleTemplates):
+    
 
 ############# ANALYSIS ON SEPERATED REGIONS  #############
 
