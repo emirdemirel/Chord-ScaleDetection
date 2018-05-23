@@ -1,18 +1,19 @@
-import os, sys, pickle, csv, json, itertools, vamp, math
+import os, sys, csv, pickle, itertools, warnings, json, math
 import numpy as np
-import essentia
 import essentia.standard as ess
 import matplotlib.pyplot as plt
-import pandas as pd
-import warnings
+
 warnings.filterwarnings('ignore')
 import IPython.display as ipd
-
+import pandas as pd
 from pandas import DataFrame, read_csv
+
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix, f1_score,accuracy_score
+from sklearn.preprocessing import normalize
+
 
 ######## ARGUMENT PARSING ########
 
@@ -20,6 +21,16 @@ from sklearn.metrics import confusion_matrix, f1_score,accuracy_score
 ####### DOWNLOAD DATASET #########
 
 
+####### DISPLAY DATASET #########
+
+def get_sound_embed_html(freesound_id):
+    return '<iframe frameborder="0" scrolling="no" src="http://www.freesound.org/embed/sound/iframe/%i/simple/medium/" width="481" height="86"></iframe>' % freesound_id
+
+def generate_html_with_sound_examples(freesound_ids):
+    html = ''
+    for sound_id in freesound_ids:
+        html += get_sound_embed_html(sound_id)
+    return html
 
 ####### DATA STRUCTURES ##########
 
@@ -51,21 +62,10 @@ def initiateData4File(file,root):
     fileData : dict
         Dictionary containing all info and data for the file
     ''' 
-    fileData=dict();fileData['name']=file.split('.')[0];fileData['path']=root;
-    fileData['numBins']=[];
-    
-    fileData['hpcp']=[];
-    fileData['mean_hpcp_vector']=[];
-    fileData['std_hpcp_vector']=[];
-    
-    fileData['NNLS'] = [];
-    fileData['mean_NNLS']=[];
-    fileData['std_NNLS']=[];
-    
+    fileData=dict(); fileData['name']=file.split('.')[0]; fileData['path']=root;
+    fileData['numBins']=[]; fileData['hpcp']=[]; fileData['mean_hpcp_vector']=[]; fileData['std_hpcp_vector']=[];
     #data from annotations
-    fileData['groundtruth']=[];
-    fileData['key']=[];
-    fileData['tuning']=[];
+    fileData['groundtruth']=[]; fileData['key']=[]; fileData['tuning']=[];
     
     return fileData
 
@@ -76,7 +76,7 @@ def sliceAudiotoParts(audio,endTime,startTime,params): #slicing the audio into p
     audio_slice = audio[starttime*fs:endtime*fs]
     return audio_slice
 
-def createDataStructure(targetDir,numBins):
+def createDataStructure(targetDir):
     dataDict = dict()
     
     for root, dirs, files in os.walk(targetDir):
@@ -98,22 +98,20 @@ def createDataStructure(targetDir,numBins):
                         dataDict[fileName]=files4scale
                         dataDict[fileName][i]['groundtruth']=dataParts[i]
                         dataDict[fileName][i]['key']=annotationData['sandbox']['key']                        
-                        dataDict[fileName][i]['numBins'] = numBins
+                        
     return dataDict
                         
-
-######### FEATURE EXTRACTION - HARMONIC PITCH CLASS PROFILES #################
-
+######### FEATURE EXTRACTION #################
 
 def computeReferenceFrequency(tonic,tuningfreq):    #computation of the reference frequency for HPCP vector from the tonic of the audio segment
     keys = {'A':0,'Bb':1,'B':2,'C':3,'C#':4,'D':5,'Eb':6,'E':7,'F':8,'F#':9,'G':10,'Ab':11}
     for key in keys:
-        if key == tonic:
-            ref_freq = tuningfreq * (2**((keys[key]*100)/1200)) /2 #compute reference frequency according to the key (tonic) of the audio file
-                                                     #divide the results by 2 the get one octave lower pitch as the reference freq
-            return ref_freq
+        if key == tonic:            
+            #compute reference frequency according to the key (tonic) of the audio file
+            #divide the results by 2 the get one octave lower pitch as the reference freq
+            return (tuningfreq * (2**((keys[key]*100)/1200)) /2)                         
         
-def computeHPCP(x,windowSize,hopSize,params,fileData):   
+def computeHPCPFeatures(x,windowSize,hopSize,params,fileData):   
     
     #Initializing lists for features
     hpcp=[];
@@ -128,14 +126,11 @@ def computeHPCP(x,windowSize,hopSize,params,fileData):
         freq,mag = ess.SpectralPeaks()(mX) #extract frequency and magnitude information by finding the spectral peaks
         tunefreq, tunecents = ess.TuningFrequency()(freq,mag)
         reffreq = computeReferenceFrequency(fileData['key'][0],tunefreq)
-        HPCPvector = ess.HPCP(normalized='unitSum',referenceFrequency=reffreq,size = numBins, windowSize = 12/numBins)(freq,mag) #harmonic pitch-class profiles 
-        HPCPmaxOnly = np.zeros_like(HPCPvector)
-        HPCPmaxOnly[np.argmax(HPCPvector)] = np.max(HPCPvector)
-        hpcp.append(HPCPmaxOnly)
+        hpcp.append(ess.HPCP(normalized='unitSum',referenceFrequency=reffreq,size = numBins, windowSize = 12/numBins)(freq,mag)) #harmonic pitch-class profiles 
         
     return hpcp, tunefreq
 
-def computeHPCPFeatures(fileData,params,numBins):
+def computeHPCP_FRAMEBASED(fileData,params):
     '''Computation of the low-level features
     Parameters
     ----------
@@ -151,7 +146,7 @@ def computeHPCPFeatures(fileData,params,numBins):
     #Reading the wave file
     fs=params.fs
     x = ess.MonoLoader(filename = os.path.join('audio/', fileData['name']+'.mp3'), sampleRate = fs)()
-    x = ess.DCRemoval()(x) ##preprocessing / apply DC removal for noisy regions
+    #x = ess.DCRemoval()(x) ##preprocessing / apply DC removal for noisy regions
     x = ess.EqualLoudness()(x)
     #Windowing (first converting from msec to number of samples)
     windowSize=round(fs*params.windowSize/1000);windowSize=int(windowSize/2)*2#assuring window size is even
@@ -162,11 +157,17 @@ def computeHPCPFeatures(fileData,params,numBins):
     endTime=fileData['groundtruth']['endTime']
     x_slice = sliceAudiotoParts(x,endTime,startTime,params)
     
-    HPCPs, tuningfreq = computeHPCP(x_slice,windowSize,hopSize,params,fileData)
+    HPCPs, tuningfreq = computeHPCPFeatures(x_slice,windowSize,hopSize,params,fileData)
+    
+    for i in range(len(HPCPs)):
+        dummy = np.zeros_like(HPCPs[i])
+        dummy[HPCPs[i].argmax(0)] = HPCPs[i].max(0)
+        HPCPs[i] = dummy
+    
     fileData['hpcp']=np.array(HPCPs);
     fileData['tuning'] = tuningfreq;
     
-def computeGlobHPCP(fileData):
+def computeHPCP_GLOBAL(fileData):
     '''Computation of the global features from low-level features
    
     Parameters
@@ -181,87 +182,12 @@ def computeGlobHPCP(fileData):
     features=list(fileData.keys())
     features.remove('path');features.remove('name')
     
-    for j in range(fileData['numBins']):
+    for j in range(len(fileData['mean_hpcp_vector'])):
         hpcps = [];
         for i in range(len(fileData['hpcp'])):
             hpcps.append(fileData['hpcp'][i][j])
         fileData['mean_hpcp_vector'].append(np.mean(hpcps))
         fileData['std_hpcp_vector'].append(np.std(hpcps))   
-        
-######### FEATURE EXTRACTION - NNLS CHROMA #################        
-      
-def computeFeaturesNNLS(audiofile, fileData,params, sampleRate=44100, stepSize=2048):
-    mywindow = np.array(
-        [0.001769, 0.015848, 0.043608, 0.084265, 0.136670, 0.199341, 0.270509, 0.348162, 0.430105, 0.514023,
-         0.597545, 0.678311, 0.754038, 0.822586, 0.882019, 0.930656, 0.967124, 0.990393, 0.999803, 0.999803,
-         0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803,
-         0.999803, 0.999803, 0.999803, 0.999803, 0.999803,
-         0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999650, 0.996856, 0.991283,
-         0.982963, 0.971942, 0.958281, 0.942058, 0.923362, 0.902299, 0.878986, 0.853553, 0.826144,
-         0.796910, 0.766016, 0.733634, 0.699946, 0.665140, 0.629410, 0.592956, 0.555982, 0.518696,
-         0.481304, 0.444018, 0.407044, 0.370590, 0.334860, 0.300054, 0.266366, 0.233984, 0.203090,
-         0.173856, 0.146447, 0.121014, 0.097701, 0.076638, 0.057942, 0.041719, 0.028058, 0.017037,
-         0.008717, 0.003144, 0.000350])
-    
-    
-    audio = ess.MonoLoader(filename=audiofile, sampleRate=sampleRate)()
-    audio = ess.DCRemoval()(audio) ##preprocessing / apply DC removal for noisy regions
-    audio = ess.EqualLoudness()(audio)
-    
-    startTime=fileData['groundtruth']['startTime']
-    endTime=fileData['groundtruth']['endTime']
-    audio_slice = sliceAudiotoParts(audio,endTime,startTime,params)
-    
-    '''
-    stepsize, semitones = vamp.collect(
-        audio_slice, sampleRate, "nnls-chroma:nnls-chroma", parameters = {'chromanormalize':2} , output="semitonespectrum", step_size=stepSize)["matrix"]
-    '''
-    
-    stepsize, semitones = vamp.collect(
-        audio_slice, sampleRate, "nnls-chroma:nnls-chroma" , output="semitonespectrum", step_size=stepSize)["matrix"]
-    
-    chroma = np.zeros((semitones.shape[0], 12))
-    for i in range(semitones.shape[0]):
-        tones = semitones[i] * mywindow
-        cc = chroma[i]
-        for j in range(tones.size):
-            cc[j % 12] = cc[j % 12] + tones[j]
-            
-    keys = {'A':0,'Bb':1,'B':2,'C':3,'C#':4,'D':5,'Eb':6,'E':7,'F':8,'F#':9,'G':10,'Ab':11}
-    for key in keys:
-        if key == fileData['groundtruth']['scaleType'].split(':')[0]:
-            pitch_shift = keys[key]
-    pitch_shift = pitch_shift * -1                
-    # roll from 'A' based to 'C' based
-    chroma = np.roll(chroma, shift=pitch_shift, axis=1)
-    '''
-    for i in range(len(chroma)):
-        for j in range(params.numBins):            
-            chroma[i][j] = chroma[i][j]/np.sum(chroma[i])
-    '''
-    fileData['NNLS'] = chroma
-    
-
-def computeFeaturesNNLSGlobal(fileData,params):
-    
-    computeFeaturesNNLS(os.path.join('audio/', fileData['name']+'.mp3'), fileData,params)
-    chromaMean = []
-    chromaSTD = []
-    for j in range(fileData['numBins']):
-        chromas = [];
-        for i in range(len(fileData['NNLS'])):
-            chromas.append(fileData['NNLS'][i][j])
-            
-        chromaMean.append(np.mean(chromas))
-        chromaSTD.append(np.std(chromas))
-        
-    for j in range(fileData['numBins']):
-        chromaMean[j]=chromaMean[j]/np.sum(chromaMean)
-        chromaSTD[j]=chromaSTD[j]/np.sum(chromaSTD)
-
-    fileData['mean_NNLS'] = chromaMean
-    fileData['std_NNLS'] = chromaSTD
-    
                 
 ############ DATA FORMATTING ###################
 
@@ -295,123 +221,18 @@ def generateCSV(filename, dataDir):
 
     with open(dataDir+'CSVfilefor_'+str(numBins)+'bins.csv', 'w') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerows(dataList) 
+        writer.writerows(dataList)    
         
-def generateCSVNNLS(filename, dataDir):
-    
-    with open(filename, 'rb') as f:
-        data = pickle.load(f)
-    #numBins = data['toprak_dorian'][0]['numBins']    
-    numBins = 12
-    fieldnames=['name']
-    for i in range(numBins):
-        ind=str(i)
-        fieldnames.append('mean_NNLS'+ind)
-    for i in range(numBins):
-        ind=str(i)
-        fieldnames.append('std_NNLS'+ind)    
-    fieldnames.append('scaleType')
-    dataList=[]
-    dataList.append(fieldnames)
-    for fileName, parts in data.items(): ##navigate in dictionary
-        for part in parts: #search within audio slices
-            tempList=[] #temporary List to put attributes for each audio slice (data-point)
-            dataname = part['name']+'_'+part['groundtruth']['name'] #name of data
-            tempList.append(dataname)
-            for i in range(numBins): #append mean_HPCP vector bins separately            
-                tempList.append(part['mean_NNLS'][i])
-            for i in range(numBins): #append mean_HPCP vector bins separately            
-                tempList.append(part['std_NNLS'][i])    
-            tempList.append(part['groundtruth']['scaleType'].split(':')[1])    #append scales for classification
-            dataList.append(tempList)
-
-    with open(dataDir+'CSVfilefor_NNLS.csv', 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerows(dataList)            
-        
-############## MAXIMUM LIKELIHOOD #################
-
-def maxlikelihood(ChromaVector):
-    
-    ScaleTemplates = dict()
-    
-    ScaleTemplates['major'] = {'scaleArray':[1,0,1,0,1,1,0,1,0,1,0,1]}
-    ScaleTemplates['dorian'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,1,0]}
-    ScaleTemplates['phrygian'] = {'scaleArray':[1,1,0,1,0,1,0,1,1,0,1,0]}
-    ScaleTemplates['lydian'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,0,1]}
-    ScaleTemplates['mixolydian'] = {'scaleArray':[1,0,1,0,1,1,0,1,0,1,1,0]}
-    ScaleTemplates['minor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,1,0]}
-    ScaleTemplates['locrian'] = {'scaleArray':[1,1,0,1,0,1,1,0,1,0,1,0]}
-    ScaleTemplates['lydianb7'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,1,0]}
-    ScaleTemplates['altered'] = {'scaleArray':[1,1,0,1,1,0,1,0,1,0,1,0]}
-    ScaleTemplates['mminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
-    ScaleTemplates['hminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,0,1]}
-    ScaleTemplates['hwdiminished'] = {'scaleArray':[1,1,0,1,1,0,1,1,0,1,1,0]}
-    
-    
-    for scale in ScaleTemplates.items():
-        #scale[0] : scale name (scaleTemplates.keys())
-        #scale[1] : elements in scale dictionaries
-        
-        NumNotesScale = np.sum(scale[1]['scaleArray'])
-        #print(NumNotesScale)
-        ChromaScaled = np.power(ChromaVector,scale[1]['scaleArray'])
-        
-        scale[1]['likelihood'] = np.prod(ChromaScaled) / ((1/NumNotesScale)**NumNotesScale)
-        
-        #print(scale[1]['likelihood'])
-    
-    maxLikelihood = ['NA',0]
-    likelihoods = []
-    for item in ScaleTemplates.items():
-        if item[1]['likelihood']>maxLikelihood[1]:
-            maxLikelihood[0]=item;maxLikelihood[1] = item[1]['likelihood']
-        likelihoods.append(item)
-        sortedlikelihoods = sorted(likelihoods, key = lambda k:k)
-    return(maxLikelihood,sortedlikelihoods) 
-    
-def maxlikelihood2(ChromaVector):
-    
-    ScaleTemplates = dict()
-    
-    ScaleTemplates['major'] = {'scaleArray':[1,0,1,0,1,1,0,1,0,1,0,1]}
-    ScaleTemplates['dorian'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,1,0]}
-    ScaleTemplates['phrygian'] = {'scaleArray':[1,1,0,1,0,1,0,1,1,0,1,0]}
-    ScaleTemplates['lydian'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,0,1]}
-    ScaleTemplates['mixolydian'] = {'scaleArray':[1,0,1,0,1,1,0,1,0,1,1,0]}
-    ScaleTemplates['minor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,1,0]}
-    ScaleTemplates['locrian'] = {'scaleArray':[1,1,0,1,0,1,1,0,1,0,1,0]}
-    ScaleTemplates['lydianb7'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,1,0]}
-    ScaleTemplates['altered'] = {'scaleArray':[1,1,0,1,1,0,1,0,1,0,1,0]}
-    ScaleTemplates['mminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
-    ScaleTemplates['hminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,0,1]}
-    ScaleTemplates['hwdiminished'] = {'scaleArray':[1,1,0,1,1,0,1,1,0,1,1,0]}
-    
-    
-    for scale in ScaleTemplates.items():
-        #scale[0] : scale name (scaleTemplates.keys())
-        #scale[1] : elements in scale dictionaries
-        
-        NumNotesScale = np.sum(scale[1]['scaleArray'])
-        #print(NumNotesScale)
-        ChromaScaled = np.multiply(ChromaVector,scale[1]['scaleArray'])
-        
-        scale[1]['likelihood'] = np.sum(ChromaScaled) / NumNotesScale
-        
-        #print(scale[1]['likelihood'])
-    
-    maxLikelihood = ['NA',0]
-    likelihoods = []
-    for item in ScaleTemplates.items():
-        if item[1]['likelihood']>maxLikelihood[1]:
-            maxLikelihood[0]=item;maxLikelihood[1] = item[1]['likelihood']
-        likelihoods.append(item)
-        sortedlikelihoods = sorted(likelihoods, key = lambda k:k)
-    return(maxLikelihood,sortedlikelihoods)     
-
+############ CHORD - SCALE DETECTION - METHOD 1: TEMPLATE-BASED LIKELIHOOD ESTIMATION ##############
 
 def cosine_similarity(v1,v2):
-    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+    '''
+    Compute Cosine Similarity of v1 to v2 using following equation:
+    (v1 dot v2)/{||v1||*||v2||)
+    
+        This metric is used to measure the angular distance between the templates of the 'GROUND_TRUTH' and 'STUDENT_PERFORMANCE' scales.
+    
+    '''
     sumxx, sumxy, sumyy = 0, 0, 0
     for i in range(len(v1)):
         x = v1[i]; y = v2[i]
@@ -420,7 +241,48 @@ def cosine_similarity(v1,v2):
         sumxy += x*y
     return sumxy/math.sqrt(sumxx*sumyy)
 
-def VisualizeScaleLikelihoods(filename, dataIndex, likelihoodmethod):
+def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):
+    
+    for scale in ScaleTemplates.items():
+        #scale[0] : scale name (scaleTemplates.keys())
+        #scale[1] : elements in scale dictionaries
+        
+        if method == 1:
+        
+            scale[1]['likelihood'] = Maxlikelihood_MULTIPLICATION(ChromaVector,scale[1]['scaleArray'])
+        
+        elif method == 2:
+    
+            scale[1]['likelihood'] = Maxlikelihood_SUMMATION(ChromaVector,scale[1]['scaleArray'])
+    
+    maxLikelihood = ['NA',0]
+    likelihoods = []
+    for item in ScaleTemplates.items():
+        if item[1]['likelihood']>maxLikelihood[1]:
+            maxLikelihood[0]=item;maxLikelihood[1] = item[1]['likelihood']
+        likelihoods.append(item)
+        sortedlikelihoods = sorted(likelihoods, key = lambda k:k)
+    return(maxLikelihood,sortedlikelihoods)
+
+def Maxlikelihood_MULTIPLICATION(ChromaVector,scaleArray):
+    
+    NumNotesScale = np.sum(scaleArray)
+    ChromaScaled = np.power(ChromaVector,scaleArray)    
+    scale_likelihood = np.prod(ChromaScaled) / ((1/NumNotesScale)**NumNotesScale)
+
+    return(scale_likelihood) 
+    
+def Maxlikelihood_SUMMATION(ChromaVector,scaleArray):
+    
+    NumNotesScale = np.sum(scaleArray)
+    ChromaScaled = np.multiply(ChromaVector,scaleArray)        
+    scale_likelihood = np.sum(ChromaScaled) / NumNotesScale        
+
+    return(scale_likelihood)
+
+############ VISUALIZE SCALE LIKELIHOODS ########################
+
+def VisualizeScaleLikelihoods(filename, dataIndex, scaleTemplates, likelihoodmethod):
     
     with open('ExtractedFeatures_for12bins!.pkl', 'rb') as f:
         data = pickle.load(f)
@@ -434,28 +296,21 @@ def VisualizeScaleLikelihoods(filename, dataIndex, likelihoodmethod):
     for i in range(len(hpcps)):
         hpcpAgg = hpcpAgg + hpcps[i]
         #print(hpcpAgg)
-        if likelihoodmethod == 1:
-            maxscalelike, likelihood = maxlikelihood(hpcpAgg)
-        elif likelihoodmethod == 2:    
-            maxscalelike, likelihood = maxlikelihood2(hpcpAgg)
+        maxscalelike, likelihood = ScaleLikelihoodEstimation(hpcpAgg,scaleTemplates, likelihoodmethod)        
 
         framelikelihoods = []
         for j in range(len(likelihood)):
             framelikelihoods.append(likelihood[j][1]['likelihood'])
             scaletypes.append(likelihood[j][0])          
         scalelikelihoods.append(framelikelihoods)
-        '''
-    for j in range(len(hpcpAgg)):
-        hpcpAgg[j] = hpcpAgg[j]/np.sum(hpcpAgg[j])
-    print(hpcpAgg)    
-    '''
+        
     scaletypes = set(scaletypes)  
     sc = sorted(scaletypes)
-    print(sc)
-    print(scalelikelihoods[-1])
+    #print(sc)
+    #print(scalelikelihoods[-1])
     MaxLikelihoodNormalized = maxscalelike[1] / np.sum(scalelikelihoods[-1])
     print('Maximum Likeliest Scale of Phrase :' + str(maxscalelike[0][0]) + '    with likeliest : ' + str(MaxLikelihoodNormalized))
-    #print(scalelikelihoods
+    #print(scalelikelihoods)
     fig = plt.figure()
     plt.imshow(np.transpose(scalelikelihoods),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
     plt.xlabel('Frame #')
@@ -465,8 +320,7 @@ def VisualizeScaleLikelihoods(filename, dataIndex, likelihoodmethod):
     plt.show()    
         
         
-        
-############# MACHINE LEARNING ####################
+############ CHORD-SCALE DETECTION - METHOD 2: MACHINE LEARNING ####################
 
 def Classification(filename,dataDir):
       
@@ -566,7 +420,7 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
         
     return cm, f_measures, accuracies
 
-############ PLOTTING ################
+############ PLOTTING - CLASSIFICATION ################
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -701,143 +555,6 @@ def FeatureExtraction_single(fileName, fileDir, params,annotationFile):
         
     return partsList
 
-
-######## SINGLE FILE PROCESSING - NNLS CHROMA ##############
-    
-def FeatureExtraction_singleNNLS(fileName, fileDir, params,annotationFile):
-    '''
-    fileName : input audio file (.mp3)
-    fileDir : directory of the audio file
-    params : Analysis parameters object
-    annotationData : Data from the annotation (exercise.json)
-    '''
-    
-    numBins = params.numBins    
-    fs=params.fs
-    stepSize = params.hopSize
-    keys = {'A':0,'Bb':1,'B':2,'C':3,'C#':4,'D':5,'Eb':6,'E':7,'F':8,'F#':9,'G':10,'Ab':11}
-    
-    mywindow = np.array(
-        [0.001769, 0.015848, 0.043608, 0.084265, 0.136670, 0.199341, 0.270509, 0.348162, 0.430105, 0.514023,
-         0.597545, 0.678311, 0.754038, 0.822586, 0.882019, 0.930656, 0.967124, 0.990393, 0.999803, 0.999803,
-         0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803,
-         0.999803, 0.999803, 0.999803, 0.999803, 0.999803,
-         0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999803, 0.999650, 0.996856, 0.991283,
-         0.982963, 0.971942, 0.958281, 0.942058, 0.923362, 0.902299, 0.878986, 0.853553, 0.826144,
-         0.796910, 0.766016, 0.733634, 0.699946, 0.665140, 0.629410, 0.592956, 0.555982, 0.518696,
-         0.481304, 0.444018, 0.407044, 0.370590, 0.334860, 0.300054, 0.266366, 0.233984, 0.203090,
-         0.173856, 0.146447, 0.121014, 0.097701, 0.076638, 0.057942, 0.041719, 0.028058, 0.017037,
-         0.008717, 0.003144, 0.000350])
-    
-    audio = ess.MonoLoader(filename = os.path.join(fileDir, fileName), sampleRate = fs)()
-    audio = ess.DCRemoval()(audio) ##preprocessing / apply DC removal for noisy regions
-    audio = ess.EqualLoudness()(audio)
-    
-    with open(fileDir+annotationFile) as json_file:
-        annotationData=json.load(json_file)
-    
-    partsList = dict()  
-           
-    for part in annotationData['parts']:
-        fileData=initiateData4File(part['name'],fileDir)
-        fileData['startTime'] = part['startTime']
-        fileData['endTime'] = part['endTime']
-        fileData['key'] = part['scaleType'].split(':')[0]
-        fileData['scaleType'] = part['scaleType'].split(':')[1]
-        
-        audio_slice = sliceAudiotoParts(audio,fileData['endTime'],fileData['startTime'],params)
-        
-        '''
-        stepsize, semitones = vamp.collect(audio_slice, 
-                                           fs, "nnls-chroma:nnls-chroma", 
-                                           parameters = {'chromanormalize':2} , 
-                                           output="semitonespectrum", 
-                                           step_size=stepSize)["matrix"]
-        '''
-        
-        stepsize, semitones = vamp.collect(audio_slice, 
-                                           fs, "nnls-chroma:nnls-chroma", 
-                                           output="semitonespectrum", 
-                                           step_size=stepSize)["matrix"]
-        
-        chroma = np.zeros((semitones.shape[0], 12))
-        for i in range(semitones.shape[0]):
-            tones = semitones[i] * mywindow
-            cc = chroma[i]
-            for j in range(tones.size):
-                cc[j % 12] = cc[j % 12] + tones[j]
-            
-    
-        for key in keys:
-            if key == part['scaleType'].split(':')[0]:
-                pitch_shift = keys[key]
-        pitch_shift = pitch_shift * -1                
-        # roll from 'A' based to 'C' based
-        chroma = np.roll(chroma, shift=pitch_shift, axis=1)        
-            
-        fileData['NNLS'] = chroma                    
-        
-        chromaMean = []
-        chromaSTD = []
-        for j in range(numBins):
-            chromas = [];
-            for i in range(len(fileData['NNLS'])):
-                chromas.append(fileData['NNLS'][i][j])
-            
-            chromaMean.append(np.mean(chromas))
-            chromaSTD.append(np.std(chromas))
-        
-        for j in range(numBins):
-            chromaMean[j]=chromaMean[j]/np.sum(chromaMean)
-            chromaSTD[j]=chromaSTD[j]/np.sum(chromaSTD)
-
-        fileData['mean_NNLS'] = chromaMean
-        fileData['std_NNLS'] = chromaSTD
-        
-        partsList[part['name']] = fileData
-        
-    fieldnames=['name']
-    for i in range(numBins):
-        ind=str(i)
-        fieldnames.append('mean_NNLS'+ind)
-    #for i in range(numBins):
-     #   ind=str(i)
-      #  fieldnames.append('std_NNLS'+ind)    
-    fieldnames.append('scaleType')
-    
-    dataList=[]
-    dataList.append(fieldnames)
-    
-        
-    
-    for part in partsList.items(): ##navigate in dictionary
-         
-        tempList=[] #temporary List to put attributes for each audio slice (data-point)
-        
-        dataname = part[0] #name of data
-        tempList.append(dataname)
-        for i in range(numBins): #append mean_HPCP vector bins separately               
-            tempList.append(part[1]['mean_NNLS'][i])
-        #for i in range(numBins): #append mean_HPCP vector bins separately            
-         #   tempList.append(part[1]['std_NNLS'][i])    
-        tempList.append(part[1]['scaleType'])    #append scales for classification
-        dataList.append(tempList)
-
-    dataList = sorted(dataList, key=lambda x: x[0])
-    
-    dataListSorted = []
-    dataListSorted.append(dataList[-1])
-    for i in range(len(dataList)-1):
-        dataListSorted.append(dataList[i])
-    
-    with open(fileDir+'CSVfilefor_singlefile.csv', 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerows(dataListSorted)    
-        
-    return partsList    
-
-############### PREDICTIONS ON SCALES EXERCISE PERFORMANCE ######################
-
 def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
     
     dfTRAIN = pd.read_csv(os.path.join(dataDir,filenameTRAIN))
@@ -861,3 +578,97 @@ def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
     ## TRAIN MODEL WITH TRAINING SET & PREDICT USING X_TEST_FEATURES
     return(model.fit(X, Y).predict(X_PREDICT))
     
+#def PredictScaleType(partsList, trainedModel):
+    '''
+    for part in partsList:
+        X_test = []
+        for j in range(
+        X_test = part
+    
+    '''
+    
+####### CASE STUDY : CHORD-SCALE EXERCISE ###############
+
+############# ANALYSIS ON SEPERATED REGIONS  #############
+
+def ScaleEstimationCumulative(FeatureData,ScaleTemplates,EstimationMethod):
+    
+    likelihoodsParts = []
+    for i in range(len(FeatureData)):  
+        PartDataHPCP = FeatureData['Part'+str(i+1)]['hpcp']
+        hpcpAgg = np.zeros_like(PartDataHPCP)
+        likelihoodsVector = []
+        for k in range(len(PartDataHPCP)):
+            hpcpAgg = hpcpAgg + PartDataHPCP[k]
+            maxscalelike, likelihood = ScaleLikelihoodEstimation(hpcpAgg, ScaleTemplates, EstimationMethod)
+            framelikelihoods = []
+            for j in range(len(likelihood)):
+                framelikelihoods.append(likelihood[j][1]['likelihood'])
+            framelikelihoods = normalize(np.array(framelikelihoods).reshape(1,-1),norm = 'l1')
+            framelikelihoods = framelikelihoods[0]
+            likelihoodsVector.append(framelikelihoods)    
+        likelihoodsParts.append(likelihoodsVector)
+    
+    length =int(len(likelihoodsParts)/2)
+    
+    scaletypes = []
+    for item in ScaleTemplates:
+        scaletypes.append(item)
+    scaleTypes = sorted(scaletypes)
+    
+    for i in range(length):
+                
+        fig = plt.figure(figsize=(15,7))
+        figure = plt.imshow(np.transpose(likelihoodsParts),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
+        plt.xlabel('Frame #')
+        plt.ylabel('ScaleType')
+        tick_marks = np.arange(len(scaleTypes))
+        plt.yticks(tick_marks, scaleTypes)
+        cbar = fig.colorbar(figure,  ticks=[0, 0.5, 1])
+        cbar.ax.set_yticklabels(['0', '0.5', '1'])
+        plt.show()
+    
+    
+######### TEMPORAL ANALYSIS ##############
+    
+def ScaleEstimationAggregate(FeatureData, winSize, hopSize, ScaleTemplates):
+    
+    likelihoodsParts = []
+    for i in range(len(FeatureData)):
+        likelihoods = []
+        hpcpVec = np.concatenate((FeatureData['Part'+str(i+1)]['hpcp'],np.zeros((winSize-hopSize,12))),axis = 0)
+        #print(hpcpVec)
+        for k in range(len(FeatureData['Part'+str(i+1)]['hpcp'])):
+            hpcpAgg = np.zeros_like(hpcpVec[0])
+            for l in range(winSize-hopSize):
+                hpcpAgg = hpcpAgg + hpcpVec[k+l]
+                #print(hpcpAgg)
+            maxscalelike, likelihood = ScaleLikelihoodEstimation(hpcpAgg, ScaleTemplates, 2)
+            framelikelihoods = []
+            for j in range(len(likelihood)):
+                framelikelihoods.append(likelihood[j][1]['likelihood'])
+            framelikelihoods = normalize(np.array(framelikelihoods).reshape(1,-1),norm = 'l2')
+            framelikelihoods = framelikelihoods[0]
+            likelihoods.append(framelikelihoods)    
+        likelihoodsParts.append(likelihoods)
+        
+    length =int(len(likelihoodsParts)/2)
+    
+    scaletypes = []
+    for item in ScaleTemplates:
+        scaletypes.append(item)
+    scaleTypes = sorted(scaletypes)    
+    for i in range(length):
+        likelihoodConcat = np.concatenate((likelihoodsParts[2*i][:(winSize-hopSize)],likelihoodsParts[2*i+1][:(winSize-hopSize)]),axis = 0)
+        
+        fig = plt.figure(figsize=(15,7))
+        figure = plt.imshow(np.transpose(likelihoodConcat),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
+        plt.xlabel('Frame #')
+        plt.ylabel('ScaleType')
+        tick_marks = np.arange(len(scaleTypes))
+        plt.yticks(tick_marks, scaleTypes)
+        cbar = fig.colorbar(figure,  ticks=[0, 0.5, 1])
+        cbar.ax.set_yticklabels(['0', '0.5', '1'])
+        plt.show()
+        
+        
