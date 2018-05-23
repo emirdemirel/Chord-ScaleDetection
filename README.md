@@ -54,7 +54,7 @@ Installation
      
    Then access localhost:8888 on your browser and when asked for a password use 'mir'.
      
-   4) Open the Jupyter notebook  'Chroma-based_ModeRecognition_in_Multi-culturalContext.ipynb' for the implementation of the work presented in paper [1].
+   4) Open the Jupyter notebook  'Chord-scale_Detection.ipynb' for the implementation of the work presented in paper [1].
 
 
    
