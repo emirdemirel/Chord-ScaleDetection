@@ -1,7 +1,7 @@
 version: "2"
 services:
   mir-tool:
-    image: seva/mir-toolbox
+    image: mtgupf/mir-toolbox
     ports:
       - "8888:8888"
     volumes:
