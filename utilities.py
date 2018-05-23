@@ -280,14 +280,14 @@ def Maxlikelihood_SUMMATION(ChromaVector,scaleArray):
 
     return(scale_likelihood)
 
-############ VISUALIZE SCALE LIKELIHOODS ########################
+############ VISUALIZATION - SCALE LIKELIHOODS ########################
 
-def VisualizeScaleLikelihoods(filename, dataIndex, scaleTemplates, likelihoodmethod):
+def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemplates, likelihoodmethod):
     
-    with open('ExtractedFeatures_for12bins!.pkl', 'rb') as f:
+    with open(filename, 'rb') as f:
         data = pickle.load(f)
     
-    data1 = data[filename]
+    data1 = data[soundname]
     hpcps = data1[dataIndex]['hpcp']
     hpcpAgg = np.zeros_like(hpcps[0])
 
@@ -305,20 +305,30 @@ def VisualizeScaleLikelihoods(filename, dataIndex, scaleTemplates, likelihoodmet
         scalelikelihoods.append(framelikelihoods)
         
     scaletypes = set(scaletypes)  
-    sc = sorted(scaletypes)
-    #print(sc)
-    #print(scalelikelihoods[-1])
+    scaleTypes = sorted(scaletypes)
+    
+    pitch_classes = ['A','Bb','B','C','C#','D','D#','E','F','F#','G','G#']
+    
+    
     MaxLikelihoodNormalized = maxscalelike[1] / np.sum(scalelikelihoods[-1])
-    print('Maximum Likeliest Scale of Phrase :' + str(maxscalelike[0][0]) + '    with likeliest : ' + str(MaxLikelihoodNormalized))
+    print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) + '    with likeliest : ' + str(MaxLikelihoodNormalized))
     #print(scalelikelihoods)
-    fig = plt.figure()
-    plt.imshow(np.transpose(scalelikelihoods),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
-    plt.xlabel('Frame #')
-    plt.ylabel('ScaleTypes')
-    tick_marks = np.arange(len(sc))
-    plt.yticks(tick_marks, sc)
-    plt.show()    
-        
+    
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True,figsize=(10,6))
+    
+    ax1.imshow(np.transpose(scalelikelihoods),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
+    ax1.set_xlabel('Frame #')
+    ax1.set_ylabel('ScaleTypes')
+    tick_marks = np.arange(len(scaleTypes))
+    ax1.set_yticks(tick_marks)
+    ax1.set_yticklabels(scaleTypes)
+           
+    ax2.imshow(np.transpose(hpcps),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
+    ax2.set_xlabel('Frame #')
+    ax2.set_ylabel('Pitch-Classes')
+    tick_marks1 = np.arange(len(pitch_classes))
+    
+    plt.show()
         
 ############ CHORD-SCALE DETECTION - METHOD 2: MACHINE LEARNING ####################
 
@@ -420,7 +430,7 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
         
     return cm, f_measures, accuracies
 
-############ PLOTTING - CLASSIFICATION ################
+############ VISUALIZATION - CLASSIFICATION ################
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -594,6 +604,8 @@ def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
 def ScaleEstimationCumulative(FeatureData,ScaleTemplates,EstimationMethod):
     
     likelihoodsParts = []
+    EstimatedScales = []
+    
     for i in range(len(FeatureData)):  
         PartDataHPCP = FeatureData['Part'+str(i+1)]['hpcp']
         hpcpAgg = np.zeros_like(PartDataHPCP)
@@ -604,22 +616,35 @@ def ScaleEstimationCumulative(FeatureData,ScaleTemplates,EstimationMethod):
             framelikelihoods = []
             for j in range(len(likelihood)):
                 framelikelihoods.append(likelihood[j][1]['likelihood'])
-            framelikelihoods = normalize(np.array(framelikelihoods).reshape(1,-1),norm = 'l1')
+
+            framelikelihoods = np.array(framelikelihoods).reshape(1,-1)
             framelikelihoods = framelikelihoods[0]
             likelihoodsVector.append(framelikelihoods)    
+            
+        EstimatedScales.append(maxscalelike)    
         likelihoodsParts.append(likelihoodsVector)
     
     length =int(len(likelihoodsParts)/2)
-    
+
     scaletypes = []
     for item in ScaleTemplates:
         scaletypes.append(item)
-    scaleTypes = sorted(scaletypes)
+        scaleTypes = sorted(scaletypes)
+        
+        
+    ### Plotting and scale estimations on cumulated likelihood vectors
     
     for i in range(length):
-                
-        fig = plt.figure(figsize=(15,7))
-        figure = plt.imshow(np.transpose(likelihoodsParts),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
+        
+        print('The most likelihood scale of the student performance in Part' + str(2*i+1) + ' is : \n')
+        print(EstimatedScales[2*i][0][0],'\n')
+              
+        print('The most likelihood scale of the student performance in Part' + str(2*i+2) + ' is : \n')      
+        print(EstimatedScales[2*i+1][0][0],'\n')
+              
+        likelihoodConcat = np.concatenate((likelihoodsParts[2*i],likelihoodsParts[2*i+1]),axis = 0)
+        fig = plt.figure(figsize=(7,4))
+        figure = plt.imshow(np.transpose(likelihoodConcat),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
         plt.xlabel('Frame #')
         plt.ylabel('ScaleType')
         tick_marks = np.arange(len(scaleTypes))
@@ -627,7 +652,13 @@ def ScaleEstimationCumulative(FeatureData,ScaleTemplates,EstimationMethod):
         cbar = fig.colorbar(figure,  ticks=[0, 0.5, 1])
         cbar.ax.set_yticklabels(['0', '0.5', '1'])
         plt.show()
+        
+    ### NORMALIZE THE FINAL SCALE-LIKELIHOOD VECTOR W.R.T 'UNIT_SUM' NORM
     
+    #for i in range(len(framelikelihoods)):
+        #framelikelihoods[i] = framelikelihoods[i]/np.sum(framelikelihoods)
+        
+    return framelikelihoods
     
 ######### TEMPORAL ANALYSIS ##############
     
@@ -661,7 +692,7 @@ def ScaleEstimationAggregate(FeatureData, winSize, hopSize, ScaleTemplates):
     for i in range(length):
         likelihoodConcat = np.concatenate((likelihoodsParts[2*i][:(winSize-hopSize)],likelihoodsParts[2*i+1][:(winSize-hopSize)]),axis = 0)
         
-        fig = plt.figure(figsize=(15,7))
+        fig = plt.figure(figsize=(7,4))
         figure = plt.imshow(np.transpose(likelihoodConcat),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
         plt.xlabel('Frame #')
         plt.ylabel('ScaleType')
@@ -670,5 +701,12 @@ def ScaleEstimationAggregate(FeatureData, winSize, hopSize, ScaleTemplates):
         cbar = fig.colorbar(figure,  ticks=[0, 0.5, 1])
         cbar.ax.set_yticklabels(['0', '0.5', '1'])
         plt.show()
+     
+    ### NORMALIZE THE FINAL SCALE-LIKELIHOOD VECTOR W.R.T 'UNIT_SUM' NORM
+    
+    #for i in range(len(framelikelihoods)):
+     #   framelikelihoods[i] = framelikelihoods[i]/np.sum(framelikelihoods)
+        
+    return framelikelihoods
         
         
