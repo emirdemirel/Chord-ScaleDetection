@@ -225,21 +225,6 @@ def generateCSV(filename, dataDir):
         
 ############ CHORD - SCALE DETECTION - METHOD 1: TEMPLATE-BASED LIKELIHOOD ESTIMATION ##############
 
-def cosine_similarity(v1,v2):
-    '''
-    Compute Cosine Similarity of v1 to v2 using following equation:
-    (v1 dot v2)/{||v1||*||v2||)
-    
-        This metric is used to measure the angular distance between the templates of the 'GROUND_TRUTH' and 'STUDENT_PERFORMANCE' scales.
-    
-    '''
-    sumxx, sumxy, sumyy = 0, 0, 0
-    for i in range(len(v1)):
-        x = v1[i]; y = v2[i]
-        sumxx += x*x
-        sumyy += y*y
-        sumxy += x*y
-    return sumxy/math.sqrt(sumxx*sumyy)
 
 def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):
     
@@ -600,12 +585,111 @@ def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
     
 ####### CASE STUDY : CHORD-SCALE EXERCISE ###############
 
+def SegmentExerciseAudio(FILENAME, Features_Part, params):
+    
+    startTime = float(Features_Part['startTime']); endTime = float(Features_Part['endTime'])
+    audio = ess.MonoLoader(filename = FILENAME, sampleRate = params.fs)()
+
+    audio_PART = audio[params.fs*startTime:params.fs*endTime]
+    
+    return(audio_PART)
+
 ######## PERFORMANCE ASSESSMENT & GRADING ##############
 
-def PerformanceAssessment(FeatureData, ScaleTemplates):
+def ComputeCosineSimilarity(v1,v2):
+    '''
+    Compute Cosine Similarity of v1 to v2 using following equation:
+    (v1 dot v2)/{||v1||*||v2||)
     
+        This metric is used to measure the angular distance between the templates of the 'GROUND_TRUTH' and 'STUDENT_PERFORMANCE' scales.
+    
+    '''
+    sumxx, sumxy, sumyy = 0, 0, 0
+    for i in range(len(v1)):
+        x = v1[i]; y = v2[i]
+        sumxx += x*x
+        sumyy += y*y
+        sumxy += x*y
+    return sumxy/math.sqrt(sumxx*sumyy)
+
+def ComputeInScaleRate(ChromaVector, ScaleArray):
+    
+    return np.sum(np.multiply(ChromaVector,ScaleArray)/np.sum(ChromaVector))
+
+def ComputeScaleCompleteness(ChromaVector, ScaleArray):
+    
+    return (np.count_nonzero(np.multiply(ChromaVector,ScaleArray)))/(np.count_nonzero(ScaleArray))
+
+def PerformanceAssessment(StudentData, likeliestScale, ScaleTemplates):
+    
+    ExpectedScale = StudentData['scaleType']
+    scaleArrayExpected = ScaleTemplates[ExpectedScale]['scaleArray']
+    scaleArrayStudent = ScaleTemplates[likeliestScale]['scaleArray']
+    chromaVector = StudentData['mean_hpcp_vector']
+    stdchromaVector = StudentData['std_hpcp_vector']
+    
+    inScaleRate = ComputeInScaleRate(chromaVector,scaleArrayExpected)
+    
+    scalechoicecorrectness = ComputeCosineSimilarity(scaleArrayExpected,scaleArrayStudent)
+    
+    scaleCompleteness = ComputeScaleCompleteness(stdchromaVector, scaleArrayExpected)
+    
+    return inScaleRate, scalechoicecorrectness, scaleCompleteness
 
 ############# ANALYSIS ON SEPERATED REGIONS  #############
+
+def SegmentAnalysis(ExercisePart, ScaleTemplates):
+    
+    EstimationMethod = 2 #additive likelihood
+    
+    likelihoodsParts = []
+    EstimatedScales = []
+
+    PART_HPCP = ExercisePart['hpcp']
+    hpcpVector = np.zeros_like(PART_HPCP)
+    likelihoodsVector = []
+
+    scaletypes = []
+    for item in ScaleTemplates:
+        scaletypes.append(item)
+        scaleTypes = sorted(scaletypes)
+
+    for k in range(len(PART_HPCP)):
+        hpcpVector = hpcpVector + PART_HPCP[k]
+        LikeliestScale, LikelihoodsArray = ScaleLikelihoodEstimation(hpcpVector, ScaleTemplates, EstimationMethod)
+        framelikelihoods = []
+        for j in range(len(LikelihoodsArray)):
+            framelikelihoods.append(LikelihoodsArray[j][1]['likelihood'])
+        framelikelihoods = np.array(framelikelihoods).reshape(1,-1)
+        framelikelihoods = framelikelihoods[0]
+        likelihoodsVector.append(framelikelihoods)
+
+    ### Plotting and scale estimations on cumulated likelihood vectors
+    print('The most likelihood scale of the student performance in ' + ExercisePart['name'] + ' is : \n')
+    print(LikeliestScale[0][0],'\n')
+   
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True,figsize=(8,5))
+    
+    ax1.imshow(np.transpose(likelihoodsVector),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
+    ax1.set_title(ExercisePart['key'] + '-' + ExercisePart['scaleType'] + ' Scale',fontsize = 16)
+    ax1.set_xlabel('Frame #')
+    ax1.set_ylabel('ScaleTypes')
+    tick_marks = np.arange(len(scaleTypes))
+    ax1.set_yticks(tick_marks)
+    ax1.set_yticklabels(scaleTypes)
+    
+    pitch_classes = ['A','Bb','B','C','C#','D','D#','E','F','F#','G','G#']
+           
+    ax2.imshow(np.transpose(PART_HPCP),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
+    ax2.set_xlabel('Frame #')
+    ax2.set_ylabel('Pitch-Classes')
+    tick_marks1 = np.arange(len(pitch_classes))
+    ax2.set_yticks(tick_marks1)
+    
+    plt.show()
+    
+    return LikeliestScale[0][0]
+                    
 
 def ScaleEstimationCumulative(FeatureData,ScaleTemplates,EstimationMethod):
     
