@@ -7,6 +7,7 @@ warnings.filterwarnings('ignore')
 import IPython.display as ipd
 import pandas as pd
 from pandas import DataFrame, read_csv
+import seaborn as sn
 
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
@@ -229,7 +230,7 @@ def FeatureSelection(filename, dataDir, featureSet):
             if featureSet == 2 or featureSet == 3:        
                 for i in range(numBins): #append mean_HPCP vector bins separately            
                     tempList.append(part['std_hpcp_vector'][i])    
-                tempList.append(part['groundtruth']['scaleType'].split(':')[1])    #append scales for classification
+            tempList.append(part['groundtruth']['scaleType'].split(':')[1])    #append scales for classification
                 
             dataList.append(tempList)
 
@@ -319,7 +320,7 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) + '    with likeliest : ' + str(MaxLikelihoodNormalized))
     #print(scalelikelihoods)
     
-    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True,figsize=(10,6))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=False,figsize=(10,6))
     
     ax1.imshow(np.transpose(scalelikelihoods),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
     ax1.set_xlabel('Frame #')
@@ -336,14 +337,57 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     
     plt.show()
         
+def Classification_Likelihood(dataDictionary, ScaleTemplates, likelihoodmethod):
+        
+    CORRECT_SCALE = 0
+    ALL_PARTS = 0
+
+    for files, parts in dataDictionary.items():
+        for part in parts:
+            LikeliestScale, ScaleLikelihoods = ScaleLikelihoodEstimation(part['mean_hpcp_vector'],ScaleTemplates,likelihoodmethod)
+            part['LikeliestScale'] = LikeliestScale[0][0]
+            if part['LikeliestScale'] == part['groundtruth']['scaleType'].split(':')[1]:
+                part['ScaleScore'] = 1
+                CORRECT_SCALE = CORRECT_SCALE + 1
+
+            ALL_PARTS = ALL_PARTS + 1    
+    
+    return(CORRECT_SCALE / ALL_PARTS *100)   
+
+def VisualizeConfusionMatrix_Likelihood(dataDictionary, ScaleTemplates):
+        
+    scales = []
+    excludeScales = ['chromatic', 'wholetone']
+    for part in ScaleTemplates.items():
+        if not part[0] in excludeScales:
+            scales.append(part[0])
+    scales = sorted(scales)    
+
+    matrixSize = len(scales)
+    confus_mat=np.zeros((matrixSize,matrixSize))        
+
+    for k in range(confus_mat.shape[0]): 
+        for files, parts in dataDictionary.items():
+            for part in parts:
+                if part['groundtruth']['scaleType'].split(':')[1]==scales[k]: #search within the target class
+                    for j in range(confus_mat.shape[1]): #look for the output
+                        if scales[j] == scales[k] and part['LikeliestScale'] == scales[k] and part['ScaleScore']==1:
+                            confus_mat[k][j]=confus_mat[k][j]+1
+
+                        elif scales[j] != scales[k] and part['LikeliestScale'] == scales[j]:   
+                            confus_mat[k][j]=confus_mat[k][j]+1
+                        
+    cm_plot = pd.DataFrame(confus_mat, index = [i for i in scales], columns = [i for i in scales])
+    plt.figure(figsize = (10,7))
+    sn.heatmap(cm_plot, annot=True)
+    plt.show()                    
+    
 ############ CHORD-SCALE DETECTION - METHOD 2: MACHINE LEARNING ####################
 
 def Classification_SVM(filename,dataDir):
       
-        
-    numBins = filename.split('_')[1].split('bins')[0]
-      
-     
+            
+    numBins = 12 
     
     print('This process might take a while (5-10 min) \n CROSS-VALIDATION & TRAINING ') 
     list_accuracy=[]
@@ -416,14 +460,14 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
         for i in Y_pred:
             Y_pred_total.append(i)
 
-    print('Accuracy score for the Feature Set : ')
+    print('Accuracy score for the Feature Set : \n')
     
     ##AVERAGE ALL RANDOM SEED ITERATIONS FOR GENERALIZATION
-    print('F-measure (mean,std) --- FINAL')
+    print('F-measure (mean,std) --- FINAL \n')
     f = round(np.mean(f_measures) ,2)
     fstd = np.std(f_measures)
     print(f,fstd )
-    print('Accuracy (mean,std) FINAL')
+    print('Accuracy (mean,std) FINAL \n')
     ac = round(np.mean(accuracies), 2)
     accstd=np.std(accuracies)
     print(ac,accstd)
