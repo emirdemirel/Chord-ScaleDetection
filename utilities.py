@@ -182,29 +182,39 @@ def computeHPCP_GLOBAL(fileData):
     features=list(fileData.keys())
     features.remove('path');features.remove('name')
     
-    for j in range(len(fileData['mean_hpcp_vector'])):
+    for j in range(len(fileData['hpcp'][0])):
         hpcps = [];
         for i in range(len(fileData['hpcp'])):
             hpcps.append(fileData['hpcp'][i][j])
         fileData['mean_hpcp_vector'].append(np.mean(hpcps))
+        
         fileData['std_hpcp_vector'].append(np.std(hpcps))   
-                
+    
 ############ DATA FORMATTING ###################
 
-def generateCSV(filename, dataDir):
+def FeatureSelection(filename, dataDir, featureSet):
     
-    with open(filename, 'rb') as f:
+    ''' 
+    featureSet = 1 for ONLY mean HPCP, 2 for ONLY std HPCP, 3 for BOTH mean + std HPCP
+    '''
+    
+    with open(os.path.join(dataDir,filename), 'rb') as f:
         data = pickle.load(f)
     #numBins = data['toprak_dorian'][0]['numBins']    
     numBins = 12
     fieldnames=['name']
-    for i in range(numBins):
-        ind=str(i)
-        fieldnames.append('mean_hpcp'+ind)
-    for i in range(numBins):
-        ind=str(i)
-        fieldnames.append('std_hpcp'+ind)    
+    
+    if featureSet == 1 or featureSet == 3:
+        for i in range(numBins):
+            ind=str(i)
+            fieldnames.append('mean_hpcp'+ind)
+    if featureSet == 2 or featureSet == 3:        
+        for i in range(numBins):
+            ind=str(i)
+            fieldnames.append('std_hpcp'+ind)    
+            
     fieldnames.append('scaleType')
+    
     dataList=[]
     dataList.append(fieldnames)
     for fileName, parts in data.items(): ##navigate in dictionary
@@ -212,16 +222,26 @@ def generateCSV(filename, dataDir):
             tempList=[] #temporary List to put attributes for each audio slice (data-point)
             dataname = part['name']+'_'+part['groundtruth']['name'] #name of data
             tempList.append(dataname)
-            for i in range(numBins): #append mean_HPCP vector bins separately            
-                tempList.append(part['mean_hpcp_vector'][i])
-            for i in range(numBins): #append mean_HPCP vector bins separately            
-                tempList.append(part['std_hpcp_vector'][i])    
-            tempList.append(part['groundtruth']['scaleType'].split(':')[1])    #append scales for classification
+            
+            if featureSet == 1 or featureSet == 3:
+                for i in range(numBins): #append mean_HPCP vector bins separately            
+                    tempList.append(part['mean_hpcp_vector'][i])
+            if featureSet == 2 or featureSet == 3:        
+                for i in range(numBins): #append mean_HPCP vector bins separately            
+                    tempList.append(part['std_hpcp_vector'][i])    
+                tempList.append(part['groundtruth']['scaleType'].split(':')[1])    #append scales for classification
+                
             dataList.append(tempList)
 
-    with open(dataDir+'CSVfilefor_'+str(numBins)+'bins.csv', 'w') as csvfile:
+    with open(dataDir+'FeaturesData_ChordScaleDataset.csv', 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(dataList)    
+        
+#############
+
+
+
+
         
 ############ CHORD - SCALE DETECTION - METHOD 1: TEMPLATE-BASED LIKELIHOOD ESTIMATION ##############
 
@@ -318,7 +338,7 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
         
 ############ CHORD-SCALE DETECTION - METHOD 2: MACHINE LEARNING ####################
 
-def Classification(filename,dataDir):
+def Classification_SVM(filename,dataDir):
       
         
     numBins = filename.split('_')[1].split('bins')[0]
