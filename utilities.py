@@ -337,18 +337,25 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     
     plt.show()
         
-def Classification_Likelihood(dataDictionary, ScaleTemplates, likelihoodmethod):
+def Classification_Likelihood(dataDictionary, ScaleTemplates, likelihoodmethod, featureSet):
         
     CORRECT_SCALE = 0
     ALL_PARTS = 0
+    
+    if featureSet =='mean':
+        features = 'mean_hpcp_vector'
+    elif featureSet =='std':   
+        features = 'std_hpcp_vector'
 
     for files, parts in dataDictionary.items():
         for part in parts:
-            LikeliestScale, ScaleLikelihoods = ScaleLikelihoodEstimation(part['mean_hpcp_vector'],ScaleTemplates,likelihoodmethod)
+            LikeliestScale, ScaleLikelihoods = ScaleLikelihoodEstimation(part[features],ScaleTemplates,likelihoodmethod)
             part['LikeliestScale'] = LikeliestScale[0][0]
             if part['LikeliestScale'] == part['groundtruth']['scaleType'].split(':')[1]:
                 part['ScaleScore'] = 1
                 CORRECT_SCALE = CORRECT_SCALE + 1
+            else:
+                part['ScaleScore'] = 0
 
             ALL_PARTS = ALL_PARTS + 1    
     
@@ -374,11 +381,11 @@ def VisualizeConfusionMatrix_Likelihood(dataDictionary, ScaleTemplates):
                         if scales[j] == scales[k] and part['LikeliestScale'] == scales[k] and part['ScaleScore']==1:
                             confus_mat[k][j]=confus_mat[k][j]+1
 
-                        elif scales[j] != scales[k] and part['LikeliestScale'] == scales[j]:   
+                        elif scales[j] != scales[k] and part['LikeliestScale'] == scales[j] and part['ScaleScore'] == 0:
                             confus_mat[k][j]=confus_mat[k][j]+1
                         
     cm_plot = pd.DataFrame(confus_mat, index = [i for i in scales], columns = [i for i in scales])
-    plt.figure(figsize = (10,7))
+    plt.figure(figsize = (9,7))
     sn.heatmap(cm_plot, annot=True)
     plt.show()                    
     
@@ -389,7 +396,6 @@ def Classification_SVM(filename,dataDir):
             
     numBins = 12 
     
-    print('This process might take a while (5-10 min) \n CROSS-VALIDATION & TRAINING ') 
     list_accuracy=[]
     
     df = pd.read_csv(os.path.join(dataDir,filename))
@@ -400,9 +406,9 @@ def Classification_SVM(filename,dataDir):
     cm,acc,f = machineLearningEvaluation(dataDir,X,Y,numBins)
 
     modeSet = sorted(modeSet)
-    print(modeSet)
-    plot_confusion_matrix(cm,modeSet,normalize=False)
+    print('\n')
     
+    return acc, f, cm, modeSet
 
 def hyperparameterOptimization(X_train, Y_train, nfolds):
     
@@ -497,7 +503,7 @@ def plot_confusion_matrix(cm, classes,
         print('Confusion matrix, without normalization')
 
     # print(cm)
-    plt.figure(figsize=(9, 10))
+    plt.figure(figsize=(7, 8))
     plt.imshow(cm, interpolation='nearest', cmap=cmap, aspect='auto')
     plt.title(title, fontsize=26)
     plt.colorbar()
@@ -517,11 +523,41 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label', fontsize=24)
     plt.xlabel('Predicted label', fontsize=24)
     plt.show()
+    
+def plot_VIOLINPLOT(DATA_ACCURACY, DATA_FSCORE):
+    
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(8, 5))
+    pos = [1,2,3]
+    
+    x_ticks = ['HPCP(mean)', 'HPCP(std)', 'HPCP(mean+std)']
+    
+    axes[0].violinplot(DATA_ACCURACY, points=80, widths=0.7,
+                       showextrema=True, showmedians=True)
+    axes[0].set_title('ACCURACY SCORE', fontsize = 18)
+    axes[0].set_xlabel('FEATURE SET', fontsize = 18)
+    axes[0].get_xaxis().set_tick_params(direction='out')
+    axes[0].xaxis.set_ticks_position('bottom')
+    axes[0].set_xticks(np.arange(1, len(x_ticks) + 1))
+    axes[0].set_xticklabels(x_ticks,rotation=45, fontsize = 14)
+    axes[0].set_xlim(0.25, len(x_ticks) + 0.75)
+    
+    parts = axes[1].violinplot(DATA_ACCURACY, points=80, widths=0.7,
+                       showextrema=True, showmedians=True)
+    axes[1].set_title('F SCORE', fontsize = 18)
+    axes[1].set_xlabel('FEATURE SET', fontsize = 18)
+    axes[1].get_xaxis().set_tick_params(direction='out')
+    axes[1].xaxis.set_ticks_position('bottom')
+    axes[1].set_xticks(np.arange(1, len(x_ticks) + 1))
+    axes[1].set_xticklabels(x_ticks,rotation=45, fontsize = 14)
+    axes[1].set_xlim(0.25, len(x_ticks) + 0.75)
+
+
+    plt.show()    
 
 #######  SINGLE FILE PROCESSING ###########
 
    
-def FeatureExtraction_single(fileName, fileDir, params,annotationFile):
+def FeatureExtraction_single(fileName, fileDir, params,annotationFile, annotationDir):
     '''
     fileName : input audio file (.mp3)
     fileDir : directory of the audio file
@@ -539,7 +575,7 @@ def FeatureExtraction_single(fileName, fileDir, params,annotationFile):
     windowSize=round(fs*params.windowSize/1000);windowSize=int(windowSize/2)*2#assuring window size is even
     hopSize=round(fs*params.hopSize/1000);hopSize=int(hopSize/2)*2#assuring hopSize is even
     
-    with open(fileDir+annotationFile) as json_file:
+    with open(annotationDir+annotationFile) as json_file:
         annotationData=json.load(json_file)
     partsList = dict()  
     
