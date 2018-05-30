@@ -288,13 +288,16 @@ def Maxlikelihood_SUMMATION(ChromaVector,scaleArray):
 
 ############ VISUALIZATION - SCALE LIKELIHOODS ########################
 
-def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemplates, likelihoodmethod):
+def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemplates, likelihoodmethod, features):
     
     with open(filename, 'rb') as f:
         data = pickle.load(f)
     
     data1 = data[soundname]
-    hpcps = data1[dataIndex]['hpcp']
+    if features == 'HPCP':
+        hpcps = data1[dataIndex]['hpcp']
+    elif features == 'NNLS':
+        hpcps = data1[dataIndex]['NNLS']
     hpcpAgg = np.zeros_like(hpcps[0])
 
     scalelikelihoods = []
@@ -337,57 +340,41 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     
     plt.show()
         
-def Classification_Likelihood(dataDictionary, ScaleTemplates, likelihoodmethod, featureSet):
+def Classification_Likelihood(dataDictionary, ScaleTemplates, likelihoodmethod, features, featureSet):
         
     CORRECT_SCALE = 0
     ALL_PARTS = 0
     
-    if featureSet =='mean':
-        features = 'mean_hpcp_vector'
-    elif featureSet =='std':   
-        features = 'std_hpcp_vector'
+    if features == 'HPCP':
+        if featureSet =='mean':
+            features = 'mean_hpcp_vector'
+        elif featureSet =='std':   
+            features = 'std_hpcp_vector'
+    
+    elif features == 'NNLS':
+        if featureSet =='mean':
+            features = 'mean_NNLS'
+        elif featureSet =='std':   
+            features = 'std_NNLS'
 
     for files, parts in dataDictionary.items():
         for part in parts:
             LikeliestScale, ScaleLikelihoods = ScaleLikelihoodEstimation(part[features],ScaleTemplates,likelihoodmethod)
             part['LikeliestScale'] = LikeliestScale[0][0]
-            if part['LikeliestScale'] == part['groundtruth']['scaleType'].split(':')[1]:
-                part['ScaleScore'] = 1
-                CORRECT_SCALE = CORRECT_SCALE + 1
-            else:
-                part['ScaleScore'] = 0
 
-            ALL_PARTS = ALL_PARTS + 1    
+def Evaluate_ScaleLikelihoodEstimation(dataDictionary, scaleTypes):
+    SCALES = []
+    SCALES_PREDICT = []
+    for files, parts in dataDictionary.items():
+        for part in parts:
+            SCALES.append(part['groundtruth']['scaleType'].split(':')[1])
+            SCALES_PREDICT.append(part['LikeliestScale'])
+    f1_score, accuracy_score = EvaluatePredictions(SCALES, SCALES_PREDICT)
     
-    return(CORRECT_SCALE / ALL_PARTS *100)   
-
-def VisualizeConfusionMatrix_Likelihood(dataDictionary, ScaleTemplates):
-        
-    scales = []
-    excludeScales = ['chromatic', 'wholetone']
-    for part in ScaleTemplates.items():
-        if not part[0] in excludeScales:
-            scales.append(part[0])
-    scales = sorted(scales)    
-
-    matrixSize = len(scales)
-    confus_mat=np.zeros((matrixSize,matrixSize))        
-
-    for k in range(confus_mat.shape[0]): 
-        for files, parts in dataDictionary.items():
-            for part in parts:
-                if part['groundtruth']['scaleType'].split(':')[1]==scales[k]: #search within the target class
-                    for j in range(confus_mat.shape[1]): #look for the output
-                        if scales[j] == scales[k] and part['LikeliestScale'] == scales[k] and part['ScaleScore']==1:
-                            confus_mat[k][j]=confus_mat[k][j]+1
-
-                        elif scales[j] != scales[k] and part['LikeliestScale'] == scales[j] and part['ScaleScore'] == 0:
-                            confus_mat[k][j]=confus_mat[k][j]+1
-                        
-    cm_plot = pd.DataFrame(confus_mat, index = [i for i in scales], columns = [i for i in scales])
-    plt.figure(figsize = (9,7))
-    sn.heatmap(cm_plot, annot=True)
-    plt.show()                    
+    print('F measure (weighted) :  \n' + str(f1_score*100) + ' %')
+    print('Overall Accuracy : \n' + str(accuracy_score*100) + ' %' )
+    CONFUSIONMATRIX = np.matrix.transpose(confusion_matrix(SCALES,SCALES_PREDICT))
+    plot_confusion_matrix(CONFUSIONMATRIX,scaleTypes)    
     
 ############ CHORD-SCALE DETECTION - METHOD 2: MACHINE LEARNING ####################
 
@@ -449,15 +436,7 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
         ## TRAIN MODEL WITH TRAINING SET & PREDICT USING X_TEST_FEATURES
         Y_pred = model.fit(X_train, Y_train).predict(X_test)
 
-        ##EVALUATION
-        ## TEST PREDICTED VALUES WITH GROUND TRUTH (Y_TEST)
-        accscore = accuracy_score(Y_test, Y_pred)
-        #print('Accuracy Measure = ')
-        #print(accscore)
-
-        f_measure = f1_score(Y_test, Y_pred, average='weighted')
-        #print('F Measure = ')
-        #print(f_measure)
+        f_measure, accscore = EvaluatePredictions(Y_test, Y_pred)
 
         f_measures.append(f_measure)
         accuracies.append(accscore)
@@ -485,6 +464,10 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
         scorefile.write(str(ac))
         
     return cm, f_measures, accuracies
+
+def EvaluatePredictions(Y_test, Y_pred):
+    
+    return (f1_score(Y_test, Y_pred, average='weighted'), accuracy_score(Y_test, Y_pred))
 
 ############ VISUALIZATION - CLASSIFICATION ################
 
