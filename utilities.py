@@ -21,6 +21,26 @@ from sklearn.preprocessing import normalize
 
 ####### DOWNLOAD DATASET #########
 
+####### SCALE DICTIONARY ########
+
+def ScaleDictionary(ScaleTemplates):
+    
+    ScaleTemplates = dict()
+    
+    ScaleTemplates['major'] = {'scaleArray':[1,0,1,0,1,1,0,1,0,1,0,1]}
+    ScaleTemplates['dorian'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,1,0]}
+    ScaleTemplates['phrygian'] = {'scaleArray':[1,1,0,1,0,1,0,1,1,0,1,0]}
+    ScaleTemplates['lydian'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,0,1]}
+    ScaleTemplates['mixolydian'] = {'scaleArray':[1,0,1,0,1,1,0,1,0,1,1,0]}
+    ScaleTemplates['minor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,1,0]}
+    ScaleTemplates['locrian'] = {'scaleArray':[1,1,0,1,0,1,1,0,1,0,1,0]}
+    ScaleTemplates['lydianb7'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,1,0]}
+    ScaleTemplates['altered'] = {'scaleArray':[1,1,0,1,1,0,1,0,1,0,1,0]}
+    ScaleTemplates['mminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
+    ScaleTemplates['hminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,0,1]}
+    ScaleTemplates['hwdiminished'] = {'scaleArray':[1,1,0,1,1,0,1,1,0,1,1,0]}
+    
+    return ScaleTemplates
 
 ####### DISPLAY DATASET #########
 
@@ -193,6 +213,9 @@ def computeHPCP_GLOBAL(fileData):
         hpcpsSTD.append(np.std(hpcpBIN))
         
     fileData['mean_hpcp_vector'] = hpcpsMEAN
+    hpcpsSUM = np.sum(hpcpsSTD)
+    for i in range(len(hpcpsSTD)):
+        hpcpsSTD[i] = hpcpsSTD[i] / hpcpsSUM
         
     fileData['std_hpcp_vector'] =  hpcpsSTD
     
@@ -243,9 +266,41 @@ def FeatureSelection(filename, dataDir, featureSet):
         writer = csv.writer(csvfile)
         writer.writerows(dataList)    
         
-#############
+############# VISUALIZATION - CHROMA HISTOGRAM #################
 
+def plotChromaHistograms(fileData, scaleTemplate):
+    
+    ChromaMEAN = fileData['mean_hpcp_vector']
+    ChromaSTD = fileData['std_hpcp_vector']
+    
+    x1 = np.multiply(ChromaMEAN,scaleTemplate)
+    x2 = np.multiply(ChromaMEAN, np.abs(1-np.array(scaleTemplate)))
+   
+    fig, axes = plt.subplots(1, 2, sharey=True, tight_layout=True, figsize = (10,6))
+       
+    axes[0].bar(np.arange(len(x1)),x1, label = 'In-Scale Notes')
+    axes[0].bar(np.arange(len(x2)),x2, color = 'coral', label = 'Out-Scale Notes')
+    axes[0].set_title('CHROMA HISTOGRAM (MEAN)')
+    axes[0].set_xlabel('PITCH CLASSES')
+    axes[0].set_ylabel('AMPLITUDE (NORMALIZED)')
+    axes[0].legend(['In-Scale Notes','Out-Scale Notes'], loc="upper right")
+    
+    fig.suptitle(fileData['name'] + '\n Scale Type : ' + fileData['groundtruth']['scaleType'].split(':')[1],fontsize=16)
+    
+    x3 = np.multiply(ChromaSTD,scaleTemplate)
+    x4 = np.multiply(ChromaSTD, np.abs(1-np.array(scaleTemplate)))
 
+    axes[1].bar(np.arange(len(x3)),x3, color = 'teal',label = 'In-Scale Notes')
+    axes[1].bar(np.arange(len(x4)),x4, color = 'coral', label = 'Out-Scale Notes')
+    axes[1].set_title('CHROMA HISTOGRAM (STD)')
+    axes[1].set_xlabel('PITCH CLASSES')
+    axes[1].set_ylabel('AMPLITUDE (NORMALIZED)')
+    axes[1].legend(['In-Scale Notes','Out-Scale Notes'], loc="upper right")
+    
+    plt.subplots_adjust(left=0.35, right = 0.7, wspace=0.6, top=0.05, bottom = 0.02)
+    
+    plt.show()
+    
 
 
         
@@ -293,16 +348,13 @@ def Maxlikelihood_SUMMATION(ChromaVector,scaleArray):
 
 ############ VISUALIZATION - SCALE LIKELIHOODS ########################
 
-def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemplates, likelihoodmethod, features):
+def VisualizeChromaANDScaleLikelihoods(FileData, scaleTemplates, likelihoodmethod, features):
+
     
-    with open(filename, 'rb') as f:
-        data = pickle.load(f)
-    
-    data1 = data[soundname]
     if features == 'HPCP':
-        hpcps = data1[dataIndex]['hpcp']
+        hpcps = FileData['hpcp']
     elif features == 'NNLS':
-        hpcps = data1[dataIndex]['NNLS']
+        hpcps = FileData['NNLS']
     hpcpAgg = np.zeros_like(hpcps[0])
 
     scalelikelihoods = []
@@ -325,10 +377,10 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     
     
     MaxLikelihoodNormalized = maxscalelike[1] / np.sum(scalelikelihoods[-1])
-    print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) + '    with likeliest : ' + str(MaxLikelihoodNormalized))
+    print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) )
     #print(scalelikelihoods)
     
-    f, (ax1, ax2) = plt.subplots(1, 2, sharey=False,figsize=(10,6))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=False,figsize=(10,6), tight_layout=True)
     
     ax1.imshow(np.transpose(scalelikelihoods),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
     ax1.set_xlabel('Frame #')
@@ -342,6 +394,8 @@ def VisualizeChromaANDScaleLikelihoods(filename, soundname, dataIndex, scaleTemp
     ax2.set_ylabel('Pitch-Classes')
     tick_marks1 = np.arange(len(pitch_classes))
     ax2.set_yticks(tick_marks1)
+    
+    plt.subplots_adjust(left=0.6, right = 0.7, wspace=0.2, top=0.65, bottom = 0.6)
     
     plt.show()
         
