@@ -183,13 +183,18 @@ def computeHPCP_GLOBAL(fileData):
     features=list(fileData.keys())
     features.remove('path');features.remove('name')
     
+    hpcpsMEAN = []
+    hpcpsSTD = []
     for j in range(len(fileData['hpcp'][0])):
-        hpcps = [];
+        hpcpBIN = [];
         for i in range(len(fileData['hpcp'])):
-            hpcps.append(fileData['hpcp'][i][j])
-        fileData['mean_hpcp_vector'].append(np.mean(hpcps))
+            hpcpBIN.append(fileData['hpcp'][i][j])
+        hpcpsMEAN.append(np.mean(hpcpBIN)) 
+        hpcpsSTD.append(np.std(hpcpBIN))
         
-        fileData['std_hpcp_vector'].append(np.std(hpcps))   
+    fileData['mean_hpcp_vector'] = hpcpsMEAN
+        
+    fileData['std_hpcp_vector'] =  hpcpsSTD
     
 ############ DATA FORMATTING ###################
 
