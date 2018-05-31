@@ -358,28 +358,40 @@ def VisualizeChromaANDScaleLikelihoods(FileData, scaleTemplates, likelihoodmetho
     hpcpAgg = np.zeros_like(hpcps[0])
 
     scalelikelihoods = []
-    scaletypes = []
+    
     for i in range(len(hpcps)):
         hpcpAgg = hpcpAgg + hpcps[i]
         #print(hpcpAgg)
         maxscalelike, likelihood = ScaleLikelihoodEstimation(hpcpAgg,scaleTemplates, likelihoodmethod)        
 
         framelikelihoods = []
-        for j in range(len(likelihood)):
-            framelikelihoods.append(likelihood[j][1]['likelihood'])
-            scaletypes.append(likelihood[j][0])          
+        
+        framelikelihoods.append(likelihood[7][1]['likelihood'])
+        framelikelihoods.append(likelihood[1][1]['likelihood'])
+        framelikelihoods.append(likelihood[11][1]['likelihood'])
+        framelikelihoods.append(likelihood[5][1]['likelihood'])
+        framelikelihoods.append(likelihood[9][1]['likelihood'])
+        framelikelihoods.append(likelihood[8][1]['likelihood'])
+        framelikelihoods.append(likelihood[4][1]['likelihood'])
+        framelikelihoods.append(likelihood[10][1]['likelihood'])
+        framelikelihoods.append(likelihood[6][1]['likelihood'])
+        framelikelihoods.append(likelihood[0][1]['likelihood'])
+        framelikelihoods.append(likelihood[2][1]['likelihood'])
+        framelikelihoods.append(likelihood[3][1]['likelihood'])         
         scalelikelihoods.append(framelikelihoods)
         
-    scaletypes = set(scaletypes)  
-    scaleTypes = sorted(scaletypes)
     
     pitch_classes = ['A','Bb','B','C','C#','D','D#','E','F','F#','G','G#']
     
+    #### Order of scale Types : 5 main SCALE TYPES : 
+    #### MAJOR, MELODIC MINOR, HARMONIC MINOR, WHOLE-TONE, HALF-WHOLE STEP DIMINISHED
     
+    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor', 'hwdiminished']
+                   
     MaxLikelihoodNormalized = maxscalelike[1] / np.sum(scalelikelihoods[-1])
     print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) )
     #print(scalelikelihoods)
-    
+       
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=False,figsize=(10,6), tight_layout=True)
     
     ax1.imshow(np.transpose(scalelikelihoods),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
