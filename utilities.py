@@ -3,6 +3,8 @@ import numpy as np
 import essentia.standard as ess
 import matplotlib.pyplot as plt
 
+import essentia
+essentia.log.warningActive=False
 warnings.filterwarnings('ignore')
 import IPython.display as ipd
 import pandas as pd
@@ -23,7 +25,7 @@ from sklearn.preprocessing import normalize
 
 ####### SCALE DICTIONARY ########
 
-def ScaleDictionary(ScaleTemplates):
+def ScaleDictionary():
     
     ScaleTemplates = dict()
     
@@ -38,6 +40,7 @@ def ScaleDictionary(ScaleTemplates):
     ScaleTemplates['altered'] = {'scaleArray':[1,1,0,1,1,0,1,0,1,0,1,0]}
     ScaleTemplates['mminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
     ScaleTemplates['hminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,0,1]}
+    ScaleTemplates['wholetone'] = {'scaleArray':[1,0,1,0,1,0,1,0,1,0,1,0]}
     ScaleTemplates['hwdiminished'] = {'scaleArray':[1,1,0,1,1,0,1,1,0,1,1,0]}
     
     return ScaleTemplates
@@ -300,14 +303,11 @@ def plotChromaHistograms(fileData, scaleTemplate):
     plt.subplots_adjust(left=0.35, right = 0.7, wspace=0.6, top=0.05, bottom = 0.02)
     
     plt.show()
-    
-
-
-        
+            
 ############ CHORD - SCALE DETECTION - METHOD 1: TEMPLATE-BASED LIKELIHOOD ESTIMATION ##############
 
 
-def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):
+def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):   
     
     for scale in ScaleTemplates.items():
         #scale[0] : scale name (scaleTemplates.keys())
@@ -323,12 +323,23 @@ def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):
     
     maxLikelihood = ['NA',0]
     likelihoods = []
+    
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
+    
+    for i in range(len(scalesList)):
+        if ScaleTemplates[scalesList[i]]['likelihood'] > maxLikelihood[1]:
+            maxLikelihood[0] = scalesList[i] ; maxLikelihood[1] = ScaleTemplates[scalesList[i]]['likelihood']
+            
+        likelihoods.append((scalesList[i],ScaleTemplates[scalesList[i]]))
+    
+    '''
     for item in ScaleTemplates.items():
         if item[1]['likelihood']>maxLikelihood[1]:
             maxLikelihood[0]=item;maxLikelihood[1] = item[1]['likelihood']
         likelihoods.append(item)
         sortedlikelihoods = sorted(likelihoods, key = lambda k:k)
-    return(maxLikelihood,sortedlikelihoods)
+    '''    
+    return(maxLikelihood,likelihoods)
 
 def Maxlikelihood_MULTIPLICATION(ChromaVector,scaleArray):
     
@@ -610,8 +621,7 @@ def plot_VIOLINPLOT(DATA_ACCURACY, DATA_FSCORE):
 
 #######  SINGLE FILE PROCESSING ###########
 
-   
-def FeatureExtraction_single(fileName, fileDir, params,annotationFile, annotationDir):
+def FeatureExtraction_single(fileName, params,annotationFile):
     '''
     fileName : input audio file (.mp3)
     fileDir : directory of the audio file
@@ -622,19 +632,19 @@ def FeatureExtraction_single(fileName, fileDir, params,annotationFile, annotatio
     numBins = params.numBins    
     fs=params.fs
     
-    x = ess.MonoLoader(filename = os.path.join(fileDir, fileName), sampleRate = fs)()
+    x = ess.MonoLoader(filename = fileName, sampleRate = fs)()
     x = ess.DCRemoval()(x) ##preprocessing / apply DC removal for noisy regions
     x = ess.EqualLoudness()(x)
     #Windowing (first converting from msec to number of samples)
     windowSize=round(fs*params.windowSize/1000);windowSize=int(windowSize/2)*2#assuring window size is even
     hopSize=round(fs*params.hopSize/1000);hopSize=int(hopSize/2)*2#assuring hopSize is even
     
-    with open(annotationDir+annotationFile) as json_file:
+    with open(annotationFile) as json_file:
         annotationData=json.load(json_file)
     partsList = dict()  
     
     for part in annotationData['parts']:
-        fileData=initiateData4File(part['name'],fileDir)
+        fileData=initiateData4File(part['name'],fileName.split('/')[0])
         fileData['startTime'] = part['startTime']
         fileData['endTime'] = part['endTime']
         fileData['key'] = part['scaleType'].split(':')[0]
@@ -648,14 +658,23 @@ def FeatureExtraction_single(fileName, fileDir, params,annotationFile, annotatio
             mX[mX<np.finfo(float).eps]=np.finfo(float).eps
 
             freq,mag = ess.SpectralPeaks()(mX) #extract frequency and magnitude information by finding the spectral peaks
-            tunefreq, tunecents = ess.TuningFrequency()(freq,mag)
-            reffreq = computeReferenceFrequency(fileData['key'],tunefreq)
+            tunefreq, tunecents = ess.TuningFrequency()(freq,mag) ## estimate tuning fo HPCP vectors
+            reffreq = computeReferenceFrequency(fileData['key'],tunefreq) ## compute Reference frequency of the reference bin in HPCP vectors
             HPCPvector = ess.HPCP(normalized='unitSum',referenceFrequency=reffreq,size = numBins, windowSize = 12/numBins)(freq,mag) #harmonic pitch-class profiles 
-            HPCPmaxOnly = np.zeros_like(HPCPvector)
+            
+            HPCPmaxOnly = np.zeros_like(HPCPvector) ### Keep ONLY the HPCP bin with max value, set other to 0 (zero).
             HPCPmaxOnly[np.argmax(HPCPvector)] = np.max(HPCPvector)
             hpcp.append(HPCPmaxOnly)
-         
-        fileData['hpcp']=np.array(hpcp)
+        
+        ### TRANSIENT REMOVAL  --- IF the non-zero bin of HPCP vectors of current, previous and next do not correspond 
+        ### to the same position in the HPCP vectors, set the current HPCP bin to zero. 
+        ### (basically removes short durations that could be caused by transients, noises or artifacts)
+        
+        for i in range(1,len(hpcp)-1):
+            if np.argmax(hpcp[i]) != np.argmax(hpcp[i-1]) and np.argmax(hpcp[i]) != np.argmax(hpcp[i+1]):
+                hpcp[i] = np.zeros(12) 
+            
+        fileData['hpcp']=np.array(hpcp)    
         
         for j in range(numBins):
             hpcps = [];
@@ -665,44 +684,8 @@ def FeatureExtraction_single(fileName, fileDir, params,annotationFile, annotatio
             fileData['std_hpcp_vector'].append(np.std(hpcps))
             
         partsList[part['name']] = fileData
-        
-        
-    fieldnames=['name']
-    for i in range(numBins):
-        ind=str(i)
-        fieldnames.append('mean_hpcp'+ind)
-    #for i in range(numBins):
-     #   ind=str(i)
-      #  fieldnames.append('std_hpcp'+ind)    
-    fieldnames.append('scaleType')
-    
-    dataList=[]
-    dataList.append(fieldnames)
-    
-    for part in partsList.items(): ##navigate in dictionary
-         
-        tempList=[] #temporary List to put attributes for each audio slice (data-point)
-        
-        dataname = part[0] #name of data
-        tempList.append(dataname)
-        for i in range(numBins): #append mean_HPCP vector bins separately               
-            tempList.append(part[1]['mean_hpcp_vector'][i])
-        #for i in range(numBins): #append mean_HPCP vector bins separately            
-         #   tempList.append(part[1]['std_hpcp_vector'][i])    
-        tempList.append(part[1]['scaleType'])    #append scales for classification
-        dataList.append(tempList)
 
-    dataList = sorted(dataList, key=lambda x: x[0])
-    
-    dataListSorted = []
-    dataListSorted.append(dataList[-1])
-    for i in range(len(dataList)-1):
-        dataListSorted.append(dataList[i])
-    
-    with open(fileDir+'CSVfilefor_'+str(numBins)+'bins.csv', 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerows(dataListSorted)    
-        
+                
     return partsList
 
 def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
@@ -764,15 +747,15 @@ def ComputeCosineSimilarity(v1,v2):
         sumxx += x*x
         sumyy += y*y
         sumxy += x*y
-    return sumxy/math.sqrt(sumxx*sumyy)
+    return (sumxy/math.sqrt(sumxx*sumyy))
 
 def ComputeInScaleRate(ChromaVector, ScaleArray):
     
     return np.sum(np.multiply(ChromaVector,ScaleArray)/np.sum(ChromaVector))
 
 def ComputeScaleCompleteness(ChromaVector, ScaleArray):
-    
-    return (np.count_nonzero(np.multiply(ChromaVector,ScaleArray)))/(np.count_nonzero(ScaleArray))
+               
+    return (np.count_nonzero(np.multiply(ChromaVector,ScaleArray)))/np.count_nonzero(ScaleArray)
 
 def PerformanceAssessment(StudentData, likeliestScale, ScaleTemplates):
     
@@ -784,11 +767,17 @@ def PerformanceAssessment(StudentData, likeliestScale, ScaleTemplates):
     
     inScaleRate = ComputeInScaleRate(chromaVector,scaleArrayExpected)
     
-    scalechoicecorrectness = ComputeCosineSimilarity(scaleArrayExpected,scaleArrayStudent)
+    scaleCompleteness = ComputeScaleCompleteness(chromaVector, scaleArrayExpected)
     
-    scaleCompleteness = ComputeScaleCompleteness(stdchromaVector, scaleArrayExpected)
+    NONZERO_PITCHES = np.count_nonzero(chromaVector)
     
-    return inScaleRate, scalechoicecorrectness, scaleCompleteness
+    if NONZERO_PITCHES < np.sum(scaleArrayExpected) :                
+        
+        return(inScaleRate,'N/A' , scaleCompleteness)
+    
+    else:    
+        scalechoicecorrectness = ComputeCosineSimilarity(scaleArrayExpected,scaleArrayStudent)    
+        return inScaleRate, scalechoicecorrectness, scaleCompleteness
 
 ############# ANALYSIS ON SEPERATED REGIONS  #############
 
@@ -803,11 +792,6 @@ def SegmentAnalysis(ExercisePart, ScaleTemplates):
     hpcpVector = np.zeros_like(PART_HPCP)
     likelihoodsVector = []
 
-    scaletypes = []
-    for item in ScaleTemplates:
-        scaletypes.append(item)
-        scaleTypes = sorted(scaletypes)
-
     for k in range(len(PART_HPCP)):
         hpcpVector = hpcpVector + PART_HPCP[k]
         LikeliestScale, LikelihoodsArray = ScaleLikelihoodEstimation(hpcpVector, ScaleTemplates, EstimationMethod)
@@ -817,10 +801,13 @@ def SegmentAnalysis(ExercisePart, ScaleTemplates):
         framelikelihoods = np.array(framelikelihoods).reshape(1,-1)
         framelikelihoods = framelikelihoods[0]
         likelihoodsVector.append(framelikelihoods)
-
+        
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
+    
+    '''
     ### Plotting and scale estimations on cumulated likelihood vectors
     print('The most likelihood scale of the student performance in ' + ExercisePart['name'] + ' is : \n')
-    print(LikeliestScale[0][0],'\n')
+    print(LikeliestScale[0],'\n')
    
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True,figsize=(8,5))
     
@@ -828,9 +815,9 @@ def SegmentAnalysis(ExercisePart, ScaleTemplates):
     ax1.set_title(ExercisePart['key'] + '-' + ExercisePart['scaleType'] + ' Scale',fontsize = 16)
     ax1.set_xlabel('Frame #')
     ax1.set_ylabel('ScaleTypes')
-    tick_marks = np.arange(len(scaleTypes))
+    tick_marks = np.arange(len(scalesList))
     ax1.set_yticks(tick_marks)
-    ax1.set_yticklabels(scaleTypes)
+    ax1.set_yticklabels(scalesList)
     
     pitch_classes = ['A','Bb','B','C','C#','D','D#','E','F','F#','G','G#']
            
@@ -841,8 +828,8 @@ def SegmentAnalysis(ExercisePart, ScaleTemplates):
     ax2.set_yticks(tick_marks1)
     
     plt.show()
-    
-    return LikeliestScale[0][0]
+    '''
+    return LikeliestScale[0], likelihoodsVector
                     
 
 def ScaleEstimationCumulative(FeatureData,ScaleTemplates,EstimationMethod):
@@ -953,4 +940,157 @@ def ScaleEstimationAggregate(FeatureData, winSize, hopSize, ScaleTemplates):
         
     return framelikelihoods
         
+#########################################
+
+def SegmentAnalysis1(ExercisePart, ScaleTemplates):
+    
+    EstimationMethod = 2 #additive likelihood
+    
+    likelihoodsParts = []
+    EstimatedScales = []
+    
+    PART_HPCP = ExercisePart['hpcp']
+    hpcpVector = np.zeros_like(PART_HPCP)
+    likelihoodsVector = []
+
+    scaletypes = []
+    for item in ScaleTemplates:
+        scaletypes.append(item)
+        scaleTypes = sorted(scaletypes)
+
+    for k in range(len(PART_HPCP)):
+        hpcpVector = hpcpVector + PART_HPCP[k]
+        LikeliestScale, LikelihoodsArray = ScaleLikelihoodEstimation(hpcpVector, ScaleTemplates, EstimationMethod)
+        framelikelihoods = []
+        for j in range(len(LikelihoodsArray)):
+            framelikelihoods.append(LikelihoodsArray[j][1]['likelihood'])
+        framelikelihoods = np.array(framelikelihoods).reshape(1,-1)
+        framelikelihoods = framelikelihoods[0]
+        likelihoodsVector.append(framelikelihoods)        
+    
+    return LikeliestScale[0]
+
+def exerciseAssessment(audioFile, annotationFile,SELECTION_PARAMETER):
+    '''
+    INPUT:
+    
+    audioFile : directory to the audio file of analysis
+    
+    annotationFile : directory to the annotation file of the exercise (scalesexercise.json)
+    
+    SELECTION_PARAMETER : PARAMETER FOR OUTPUT FORMAT SELECTION. IF '0', returns OVERALL_GRADES, IF '1', returns table of separate grades of each region. 
+    
+    OUTPUT:
+    
+    '''
+    
+    params = AnalysisParams(200,100,'hann',2048,44100,12)
+    
+    ScaleTemplates = ScaleDictionary()
+    
+    FEATURES_DATA = FeatureExtraction_single(audioFile, params, annotationFile)
+    GRADES = []
+    GRADES.append(['PARTS', ('In-Scale_Rate', 'Scale_Correctness','In-Scale_Completeness')])
+    
+    for i in range(len(FEATURES_DATA)):
+        PartData = FEATURES_DATA['Part'+str(i+1)]
         
+        LikeliestScale = SegmentAnalysis1(PartData,ScaleTemplates)
+        
+        GRADES.append(['Part'+str(i+1),PerformanceAssessment(PartData,LikeliestScale,ScaleTemplates)])
+      
+    INSCALERATES = [] ; INSCALECOMPLETENESS = [] ; SCALECORRECTNESS = []
+    for l in range(1,len(GRADES)):
+        
+        INSCALERATES.append(GRADES[l][1][0])
+        
+        if GRADES[l][1][1] == 'N/A':
+            INSCALECOMPLETENESS.append(0)
+            
+        else:
+            INSCALECOMPLETENESS.append(GRADES[l][1][1])
+        SCALECORRECTNESS.append(GRADES[l][1][2])
+    
+    if SELECTION_PARAMETER == 0 :        
+        return(np.mean(INSCALERATES) ,round(np.mean(INSCALECOMPLETENESS),3)*100,np.mean(SCALECORRECTNESS))
+    
+    elif SELECTION_PARAMETER == 1 :    
+        return(GRADES)    
+
+
+def VisualizePerformance(LikelihoodsVectors, FeaturesData):
+    
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
+    
+    fig, axes = plt.subplots(3, 4, sharey=True,figsize=(12,8))
+    countPART = 0
+    for row in range(3):
+        column = 0    
+        PART_DATA = FeaturesData['Part'+str(countPART+1)]
+        axes[row,column].imshow(np.transpose(LikelihoodsVectors[countPART]),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
+        axes[row,column].set_title('Part'+str(countPART+1) + ' - Target: ' + PART_DATA['key'] + '-' + PART_DATA['scaleType'] ,fontsize = 14)
+        axes[row,column].set_xlabel('Frame #')
+        axes[row,column].set_ylabel('ScaleTypes')
+        tick_marks = np.arange(len(scalesList))
+        axes[row,column].set_yticks(tick_marks)
+        axes[row,column].set_yticklabels(scalesList)
+
+        pitch_classes = ['A','Bb','B','C','C#','D','D#','E','F','F#','G','G#']
+
+        axes[row,column+1].imshow(np.transpose(FeaturesData['Part'+str(countPART+1)]['hpcp']),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
+        axes[row,column+1].set_xlabel('Frame #')
+        axes[row,column+1].set_ylabel('Pitch-Classes')
+        axes[row,column+1].set_title('Chroma Features vs Time')
+        tick_marks1 =  np.arange(len(pitch_classes))
+        
+        axes[row,column+1].set_yticks(tick_marks1)
+        
+        countPART = countPART + 1 
+        PART_DATA = FeaturesData['Part'+str(countPART+1)]
+        axes[row,column+2].imshow(np.transpose(LikelihoodsVectors[countPART]),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma',norm=plt.Normalize())
+        axes[row,column+2].set_title('Part'+str(countPART+1) + ' - Target: ' + PART_DATA['key'] + '-' + PART_DATA['scaleType'] + ' Scale',fontsize = 14)
+        axes[row,column+2].set_xlabel('Frame #')
+        axes[row,column+2].set_ylabel('ScaleTypes')
+        tick_marks = np.arange(len(scalesList))
+        axes[row,column+2].set_yticks(tick_marks)
+        axes[row,column+2].set_yticklabels(scalesList)
+        
+        axes[row,column+3].imshow(np.transpose(FeaturesData['Part'+str(countPART+1)]['hpcp']),aspect = 'auto',interpolation = 'nearest',origin = 'lower',cmap = 'magma')
+        axes[row,column+3].set_xlabel('Frame #')
+        axes[row,column+3].set_ylabel('Pitch-Classes')
+        axes[row,column+3].set_title('Chroma Features vs Time')
+        tick_marks1 = np.arange(len(pitch_classes))
+        axes[row,column+3].set_yticks(tick_marks1)
+        
+        countPART = countPART + 1
+        
+    plt.tight_layout()
+    plt.show()
+    
+def plot_tableGRADES(GRADES, ESTIMATEDSCALES):
+    
+    parts = []; inscalerates = []; inscalecompleteness = [] ; scalecorrectness = [];
+    ESTIMATEDSCALES.append(' ----- ')
+    fig, ax = plt.subplots()
+
+    ax.axis('off')
+    ax.axis('tight')
+
+    for i in range(1,len(GRADES)):
+        parts.append(GRADES[i][0])
+        inscalerates.append(round(GRADES[i][1][0],3)*100)
+        if type(GRADES[i][1][1]) == float:
+            inscalecompleteness.append(GRADES[i][1][1]*100)
+        else:
+            inscalecompleteness.append(GRADES[i][1][1])
+        scalecorrectness.append(round(GRADES[i][1][2]*100,3))
+
+    TABLE = plt.table(cellText=np.transpose([inscalerates,inscalecompleteness,scalecorrectness,ESTIMATEDSCALES]),
+                          rowLabels= parts,
+                          colLabels= ['In-Scale_Rate (%) ', 'Scale_Correctness (%) ','In-Scale_Completeness (%) ','Estimated_Scales (%) '], loc='center right')
+    
+    TABLE.set_fontsize(20)
+    TABLE.scale(2, 2)
+    #plt.subplots_adjust(left=0.6, right = 0.7, wspace=0.2, top=0.65, bottom = 0.6)
+    fig.tight_layout()
+    plt.show()    
