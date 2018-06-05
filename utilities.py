@@ -722,9 +722,9 @@ def TrainANDPredict(filenameTRAIN,filenamePREDICT,dataDir):
     
 ####### CASE STUDY : CHORD-SCALE EXERCISE ###############
 
-def SegmentExerciseAudio(FILENAME, Features_Part, params):
+def SegmentExerciseAudio(FILENAME, startTime, endTime , params):
     
-    startTime = float(Features_Part['startTime']); endTime = float(Features_Part['endTime'])
+    startTime = float(startTime); endTime = float(endTime)
     audio = ess.MonoLoader(filename = FILENAME, sampleRate = params.fs)()
 
     audio_PART = audio[params.fs*startTime:params.fs*endTime]
