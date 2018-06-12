@@ -771,9 +771,17 @@ def PerformanceAssessment(StudentData, likeliestScale, ScaleTemplates):
     
     NONZERO_PITCHES = np.count_nonzero(chromaVector)
     
-    if NONZERO_PITCHES < np.sum(scaleArrayExpected) :                
+    if NONZERO_PITCHES < np.sum(scaleArrayExpected)-2 :                
         
         return(inScaleRate,'N/A' , scaleCompleteness)
+    
+    elif NONZERO_PITCHES < np.sum(scaleArrayExpected) and inScaleRate > 90 :
+        
+        return(inScaleRate, '100', scaleCompleteness)
+    
+    elif NONZERO_PITCHES < np.sum(scaleArrayExpected) and inScaleRate < 90 :
+        scalechoicecorrectness = ComputeCosineSimilarity(scaleArrayExpected,scaleArrayStudent)
+        return(inScaleRate, scalechoicecorrectness, scaleCompleteness)
     
     else:    
         scalechoicecorrectness = ComputeCosineSimilarity(scaleArrayExpected,scaleArrayStudent)    
