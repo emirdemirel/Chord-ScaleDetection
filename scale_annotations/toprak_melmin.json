@@ -15,121 +15,121 @@
               "name":"Part1",
               "startTime":"0.00",
               "endTime":"5.547",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part2",
-              "startTime":"5.847",
+              "startTime":"5.845",
               "endTime":"8.959",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part3",
               "startTime":"9.071",
               "endTime":"15.041",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part4",
-              "startTime":"15.041",
+              "startTime":"15.044",
               "endTime":"20.045",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part5",
               "startTime":"20.205",
               "endTime":"25.303",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part6",
               "startTime":"25.378",
               "endTime":"30.757",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part7",
               "startTime":"30.832",
               "endTime":"34.782",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part8",
-              "startTime":"34.782",
+              "startTime":"34.784",
               "endTime":"44.524",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part9",
               "startTime":"44.608",
               "endTime":"49.706",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part10",
               "startTime":"57.091",
               "endTime":"62.32",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part11",
               "startTime":"62.433",
               "endTime":"66.65",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part12",
               "startTime":"67.287",
               "endTime":"73.397",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part13",
               "startTime":"73.547",
               "endTime":"78.552",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part14",
               "startTime":"78.664",
               "endTime":"83.388",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part15",
               "startTime":"83.594",
               "endTime":"89.779",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
              {
               "name":"Part16",
               "startTime":"89.985",
               "endTime":"95.458",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part17",
-              "startTime":"95.458",
+              "startTime":"95.459",
               "endTime":"100.847",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part18",
               "startTime":"101.015",
               "endTime":"102.91",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part19",
               "startTime":"103.34",
               "endTime":"112.71",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             },
             {
               "name":"Part20",
               "startTime":"112.955",
               "endTime":"116.666",
-              "scaleType": "Bb:mminor"
+              "scaleType": "Bb:melmin"
             }
           ]
 
