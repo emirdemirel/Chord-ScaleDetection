@@ -38,7 +38,7 @@ def ScaleDictionary():
     ScaleTemplates['locrian'] = {'scaleArray':[1,1,0,1,0,1,1,0,1,0,1,0]}
     ScaleTemplates['lydianb7'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,1,0]}
     ScaleTemplates['altered'] = {'scaleArray':[1,1,0,1,1,0,1,0,1,0,1,0]}
-    ScaleTemplates['mminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
+    ScaleTemplates['melmin'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
     ScaleTemplates['hminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,0,1]}
     ScaleTemplates['wholetone'] = {'scaleArray':[1,0,1,0,1,0,1,0,1,0,1,0]}
     ScaleTemplates['hwdiminished'] = {'scaleArray':[1,1,0,1,1,0,1,1,0,1,1,0]}
@@ -214,12 +214,15 @@ def computeHPCP_GLOBAL(fileData):
             hpcpBIN.append(fileData['hpcp'][i][j])
         hpcpsMEAN.append(np.mean(hpcpBIN)) 
         hpcpsSTD.append(np.std(hpcpBIN))
-        
+    
+    hpcpsMEANSUM = np.sum(hpcpsMEAN)
+    for i in range(len(hpcpsMEAN)):
+        hpcpsMEAN[i] = hpcpsMEAN[i] / hpcpsMEANSUM
     fileData['mean_hpcp_vector'] = hpcpsMEAN
+    
     hpcpsSUM = np.sum(hpcpsSTD)
     for i in range(len(hpcpsSTD)):
-        hpcpsSTD[i] = hpcpsSTD[i] / hpcpsSUM
-        
+        hpcpsSTD[i] = hpcpsSTD[i] / hpcpsSUM    
     fileData['std_hpcp_vector'] =  hpcpsSTD
     
 ############ DATA FORMATTING ###################
@@ -309,42 +312,46 @@ def plotChromaHistograms(fileData, scaleTemplate):
 
 def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):   
     
-    for scale in ScaleTemplates.items():
-        #scale[0] : scale name (scaleTemplates.keys())
-        #scale[1] : elements in scale dictionaries
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor', 'hwdiminished']
+    
+    
+    likelihoods = []
+    likelihoodvalues = []
+      
+    for i in range(len(scalesList)):
         
         if method == 1:
         
-            scale[1]['likelihood'] = Maxlikelihood_MULTIPLICATION(ChromaVector,scale[1]['scaleArray'])
+            Likelihood = Maxlikelihood_MULTIPLICATION(ChromaVector,ScaleTemplates[scalesList[i]]['scaleArray'])
         
         elif method == 2:
     
-            scale[1]['likelihood'] = Maxlikelihood_SUMMATION(ChromaVector,scale[1]['scaleArray'])
+            Likelihood = Maxlikelihood_SUMMATION(ChromaVector,ScaleTemplates[scalesList[i]]['scaleArray'])
+                    
+        likelihoodvalues.append(Likelihood)
+        
+    likelihoodvaluesSUM = np.sum(likelihoodvalues)    
+    likelihoodsNormalized = []
+    for i in range(len(likelihoodvalues)):
+        likelihoodsNormalized.append(likelihoodvalues[i]/likelihoodvaluesSUM)
     
-    maxLikelihood = ['NA',0]
-    likelihoods = []
-    
-    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
     
     for i in range(len(scalesList)):
-        if ScaleTemplates[scalesList[i]]['likelihood'] > maxLikelihood[1]:
-            maxLikelihood[0] = scalesList[i] ; maxLikelihood[1] = ScaleTemplates[scalesList[i]]['likelihood']
-            
-        likelihoods.append((scalesList[i],ScaleTemplates[scalesList[i]]))
-    
-    '''
-    for item in ScaleTemplates.items():
-        if item[1]['likelihood']>maxLikelihood[1]:
-            maxLikelihood[0]=item;maxLikelihood[1] = item[1]['likelihood']
-        likelihoods.append(item)
-        sortedlikelihoods = sorted(likelihoods, key = lambda k:k)
-    '''    
+        
+        likelihoods.append((scalesList[i],likelihoodsNormalized[i]))
+        
+    maxLikelihood = [(scalesList[np.argmax(likelihoodsNormalized)],np.max(likelihoodsNormalized))]
+
     return(maxLikelihood,likelihoods)
 
 def Maxlikelihood_MULTIPLICATION(ChromaVector,scaleArray):
     
     NumNotesScale = np.sum(scaleArray)
-    ChromaScaled = np.power(ChromaVector,scaleArray)    
+    ChromaScaled = []
+    for i in range(len(ChromaVector)):
+        ChromaScaled.append(ChromaVector[i]**scaleArray[i])
+           
+    #ChromaScaled = np.power(ChromaVector,scaleArray)    
     scale_likelihood = np.prod(ChromaScaled) / ((1/NumNotesScale)**NumNotesScale)
 
     return(scale_likelihood) 
@@ -374,34 +381,31 @@ def VisualizeChromaANDScaleLikelihoods(FileData, scaleTemplates, likelihoodmetho
         hpcpAgg = hpcpAgg + hpcps[i]
         #print(hpcpAgg)
         maxscalelike, likelihood = ScaleLikelihoodEstimation(hpcpAgg,scaleTemplates, likelihoodmethod)        
-
+        
         framelikelihoods = []
         
-        framelikelihoods.append(likelihood[7][1]['likelihood'])
-        framelikelihoods.append(likelihood[1][1]['likelihood'])
-        framelikelihoods.append(likelihood[11][1]['likelihood'])
-        framelikelihoods.append(likelihood[5][1]['likelihood'])
-        framelikelihoods.append(likelihood[9][1]['likelihood'])
-        framelikelihoods.append(likelihood[8][1]['likelihood'])
-        framelikelihoods.append(likelihood[4][1]['likelihood'])
-        framelikelihoods.append(likelihood[10][1]['likelihood'])
-        framelikelihoods.append(likelihood[6][1]['likelihood'])
-        framelikelihoods.append(likelihood[0][1]['likelihood'])
-        framelikelihoods.append(likelihood[2][1]['likelihood'])
-        framelikelihoods.append(likelihood[3][1]['likelihood'])         
+        for l in range(len(likelihood)):
+            framelikelihoods.append(likelihood[l][1])
+            
         scalelikelihoods.append(framelikelihoods)
         
     
     pitch_classes = ['A','Bb','B','C','C#','D','D#','E','F','F#','G','G#']
+
     
-    #### Order of scale Types : 5 main SCALE TYPES : 
-    #### MAJOR, MELODIC MINOR, HARMONIC MINOR, WHOLE-TONE, HALF-WHOLE STEP DIMINISHED
+    #### Order of scale Types : 
     
-    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor', 'hwdiminished']
+    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor', 'hwdiminished']
                    
-    MaxLikelihoodNormalized = maxscalelike[1] / np.sum(scalelikelihoods[-1])
+    MaxLikelihoodNormalized = maxscalelike[0][1] / np.sum(scalelikelihoods[-1])
     print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) )
     #print(scalelikelihoods)
+    '''
+    for i in range(len(scalelikelihoods)):
+        scalelikelihoodsSUM = np.sum(scalelikelihoods[i])
+        for j in range(len(scalelikelihoods[i])):
+            scalelikelihoods[i][j] = scalelikelihoods[i][j] / scalelikelihoodsSUM
+    '''
        
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=False,figsize=(10,6), tight_layout=True)
     
@@ -455,8 +459,8 @@ def Evaluate_ScaleLikelihoodEstimation(dataDictionary, scaleTypes):
     
     print('F measure (weighted) :  \n' + str(f1_score*100) + ' %')
     print('Overall Accuracy : \n' + str(accuracy_score*100) + ' %' )
-    CONFUSIONMATRIX = np.matrix.transpose(confusion_matrix(SCALES,SCALES_PREDICT))
-    plot_confusion_matrix(CONFUSIONMATRIX,scaleTypes)    
+    CONFUSIONMATRIX = confusion_matrix(SCALES,SCALES_PREDICT,scaleTypes)
+    plot_confusion_matrix(CONFUSIONMATRIX,scaleTypes)   
     
 ############ CHORD-SCALE DETECTION - METHOD 2: MACHINE LEARNING ####################
 
@@ -528,7 +532,7 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
             Y_pred_total.append(i)
 
     print('Accuracy score for the Feature Set : \n')
-    
+    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor', 'hwdiminished']
     ##AVERAGE ALL RANDOM SEED ITERATIONS FOR GENERALIZATION
     print('F-measure (mean,std) --- FINAL \n')
     f = round(np.mean(f_measures) ,2)
@@ -538,7 +542,7 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
     ac = round(np.mean(accuracies), 2)
     accstd=np.std(accuracies)
     print(ac,accstd)
-    cm = confusion_matrix(Y_total, Y_pred_total)
+    cm = confusion_matrix(Y_total, Y_pred_total,scaleTypes)
 
 
     with open(targetDir + 'scores_' + str(numBin) + '.txt', 'w') as scorefile:
@@ -810,7 +814,7 @@ def SegmentAnalysis(ExercisePart, ScaleTemplates):
         framelikelihoods = framelikelihoods[0]
         likelihoodsVector.append(framelikelihoods)
         
-    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor','wholetone','hwdiminished']
     
     '''
     ### Plotting and scale estimations on cumulated likelihood vectors
@@ -1028,7 +1032,7 @@ def exerciseAssessment(audioFile, annotationFile,SELECTION_PARAMETER):
 
 def VisualizePerformance(LikelihoodsVectors, FeaturesData):
     
-    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor','wholetone','hwdiminished']
     
     fig, axes = plt.subplots(3, 4, sharey=True,figsize=(12,8))
     countPART = 0
