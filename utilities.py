@@ -38,7 +38,7 @@ def ScaleDictionary():
     ScaleTemplates['locrian'] = {'scaleArray':[1,1,0,1,0,1,1,0,1,0,1,0]}
     ScaleTemplates['lydianb7'] = {'scaleArray':[1,0,1,0,1,0,1,1,0,1,1,0]}
     ScaleTemplates['altered'] = {'scaleArray':[1,1,0,1,1,0,1,0,1,0,1,0]}
-    ScaleTemplates['melmin'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
+    ScaleTemplates['mminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,0,1,0,1]}
     ScaleTemplates['hminor'] = {'scaleArray':[1,0,1,1,0,1,0,1,1,0,0,1]}
     ScaleTemplates['wholetone'] = {'scaleArray':[1,0,1,0,1,0,1,0,1,0,1,0]}
     ScaleTemplates['hwdiminished'] = {'scaleArray':[1,1,0,1,1,0,1,1,0,1,1,0]}
@@ -312,7 +312,7 @@ def plotChromaHistograms(fileData, scaleTemplate):
 
 def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):   
     
-    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor', 'hwdiminished']
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor', 'hwdiminished']
     
     
     likelihoods = []
@@ -331,16 +331,17 @@ def ScaleLikelihoodEstimation(ChromaVector, ScaleTemplates, method):
         likelihoodvalues.append(Likelihood)
         
     likelihoodvaluesSUM = np.sum(likelihoodvalues)    
+    '''
     likelihoodsNormalized = []
     for i in range(len(likelihoodvalues)):
         likelihoodsNormalized.append(likelihoodvalues[i]/likelihoodvaluesSUM)
-    
+    '''
     
     for i in range(len(scalesList)):
         
-        likelihoods.append((scalesList[i],likelihoodsNormalized[i]))
+        likelihoods.append((scalesList[i],likelihoodvalues[i]))
         
-    maxLikelihood = [(scalesList[np.argmax(likelihoodsNormalized)],np.max(likelihoodsNormalized))]
+    maxLikelihood = [(scalesList[np.argmax(likelihoodvalues)],np.max(likelihoodvalues))]
 
     return(maxLikelihood,likelihoods)
 
@@ -395,7 +396,7 @@ def VisualizeChromaANDScaleLikelihoods(FileData, scaleTemplates, likelihoodmetho
     
     #### Order of scale Types : 
     
-    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor', 'hwdiminished']
+    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor', 'hwdiminished']
                    
     MaxLikelihoodNormalized = maxscalelike[0][1] / np.sum(scalelikelihoods[-1])
     print('Maximum Likeliest Scale of Phrase : ' + str(maxscalelike[0][0]) )
@@ -532,7 +533,7 @@ def machineLearningEvaluation(targetDir, X, Y, numBin):
             Y_pred_total.append(i)
 
     print('Accuracy score for the Feature Set : \n')
-    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor', 'hwdiminished']
+    scaleTypes = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor', 'hwdiminished']
     ##AVERAGE ALL RANDOM SEED ITERATIONS FOR GENERALIZATION
     print('F-measure (mean,std) --- FINAL \n')
     f = round(np.mean(f_measures) ,2)
@@ -765,7 +766,7 @@ def PerformanceAssessment(StudentData, likeliestScale, ScaleTemplates):
     
     ExpectedScale = StudentData['scaleType']
     scaleArrayExpected = ScaleTemplates[ExpectedScale]['scaleArray']
-    scaleArrayStudent = ScaleTemplates[likeliestScale]['scaleArray']
+    scaleArrayStudent = ScaleTemplates[likeliestScale[0]]['scaleArray']
     chromaVector = StudentData['mean_hpcp_vector']
     stdchromaVector = StudentData['std_hpcp_vector']
     
@@ -777,11 +778,11 @@ def PerformanceAssessment(StudentData, likeliestScale, ScaleTemplates):
     
     if NONZERO_PITCHES < np.sum(scaleArrayExpected)-2 :                
         
-        return(inScaleRate,'N/A' , scaleCompleteness)
+        return(inScaleRate,0 , scaleCompleteness)
     
     elif NONZERO_PITCHES < np.sum(scaleArrayExpected) and inScaleRate > 90 :
         
-        return(inScaleRate, '100', scaleCompleteness)
+        return(inScaleRate, 0, scaleCompleteness)
     
     elif NONZERO_PITCHES < np.sum(scaleArrayExpected) and inScaleRate < 90 :
         scalechoicecorrectness = ComputeCosineSimilarity(scaleArrayExpected,scaleArrayStudent)
@@ -809,12 +810,12 @@ def SegmentAnalysis(ExercisePart, ScaleTemplates):
         LikeliestScale, LikelihoodsArray = ScaleLikelihoodEstimation(hpcpVector, ScaleTemplates, EstimationMethod)
         framelikelihoods = []
         for j in range(len(LikelihoodsArray)):
-            framelikelihoods.append(LikelihoodsArray[j][1]['likelihood'])
+            framelikelihoods.append(LikelihoodsArray[j][1])
         framelikelihoods = np.array(framelikelihoods).reshape(1,-1)
         framelikelihoods = framelikelihoods[0]
         likelihoodsVector.append(framelikelihoods)
         
-    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor','wholetone','hwdiminished']
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
     
     '''
     ### Plotting and scale estimations on cumulated likelihood vectors
@@ -920,8 +921,8 @@ def ScaleEstimationAggregate(FeatureData, winSize, hopSize, ScaleTemplates):
             maxscalelike, likelihood = ScaleLikelihoodEstimation(hpcpAgg, ScaleTemplates, 2)
             framelikelihoods = []
             for j in range(len(likelihood)):
-                framelikelihoods.append(likelihood[j][1]['likelihood'])
-            framelikelihoods = normalize(np.array(framelikelihoods).reshape(1,-1),norm = 'l2')
+                framelikelihoods.append(likelihood[j][1])
+            framelikelihoods = normalize(np.array(framelikelihoods).reshape(1,-1),norm = 'l1')
             framelikelihoods = framelikelihoods[0]
             likelihoods.append(framelikelihoods)    
         likelihoodsParts.append(likelihoods)
@@ -975,7 +976,7 @@ def SegmentAnalysis1(ExercisePart, ScaleTemplates):
         LikeliestScale, LikelihoodsArray = ScaleLikelihoodEstimation(hpcpVector, ScaleTemplates, EstimationMethod)
         framelikelihoods = []
         for j in range(len(LikelihoodsArray)):
-            framelikelihoods.append(LikelihoodsArray[j][1]['likelihood'])
+            framelikelihoods.append(LikelihoodsArray[j][1])
         framelikelihoods = np.array(framelikelihoods).reshape(1,-1)
         framelikelihoods = framelikelihoods[0]
         likelihoodsVector.append(framelikelihoods)        
@@ -1032,7 +1033,7 @@ def exerciseAssessment(audioFile, annotationFile,SELECTION_PARAMETER):
 
 def VisualizePerformance(LikelihoodsVectors, FeaturesData):
     
-    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','melmin','lydianb7','altered','hminor','wholetone','hwdiminished']
+    scalesList = ['major','dorian','phrygian','lydian','mixolydian','minor','locrian','mminor','lydianb7','altered','hminor','wholetone','hwdiminished']
     
     fig, axes = plt.subplots(3, 4, sharey=True,figsize=(12,8))
     countPART = 0
@@ -1096,8 +1097,10 @@ def plot_tableGRADES(GRADES, ESTIMATEDSCALES):
         else:
             inscalecompleteness.append(GRADES[i][1][1])
         scalecorrectness.append(round(GRADES[i][1][2]*100,3))
-
-    TABLE = plt.table(cellText=np.transpose([inscalerates,inscalecompleteness,scalecorrectness,ESTIMATEDSCALES]),
+    
+    values = [inscalerates,inscalecompleteness,scalecorrectness,ESTIMATEDSCALES]
+    scores = [list(i) for i in zip(*values)]
+    TABLE = plt.table(cellText=scores ,
                           rowLabels= parts,
                           colLabels= ['In-Scale_Rate (%) ', 'Scale_Correctness (%) ','In-Scale_Completeness (%) ','Estimated_Scales (%) '], loc='center right')
     
