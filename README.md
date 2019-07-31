@@ -48,11 +48,16 @@ Installation
    
     git clone https://github.com/emirdemirel/Supervised_Mode_Recognition.git
     
-   3) Initiate the docker image using following command. You may need to access with superuser permission.
-   
-     docker-compose up
-     
-   Then access localhost:8888 on your browser and when asked for a password use 'mir'.
+   3) On MacOS or Windows, run:
+
+    docker-compose up
+
+On Linux, run the following (this command ensures that any files you create are owned by your own user):
+
+    JUPYTER_USER_ID=$(id -u) docker-compose up
+
+Then accesss http://localhost:8888 with your browser and when asked for a
+password use ***mir***
      
    4) Open the Jupyter notebook  'Chord-scale_Detection.ipynb' for the implementation of the work presented in paper [1].
 
